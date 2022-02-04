@@ -1,0 +1,125 @@
+@media (max-width: 575.98px) {
+  .sidenav {
+    padding-top: 15px;
+  }
+  .sidenav a {
+    font-size: 18px;
+  }
+  .viewall .modal-dialog.modal-dialog-centered {
+    max-width: 98% !important;
+  }
+  .swap_tab_0_1 {
+    border-radius: 10px;
+  }
+  .WSUM_value {
+    width: 100%;
+  }
+  img.rubik_logo {
+    width: 161px;
+  }
+  span#currencySymbol1 {
+    font-size: 14px;
+  }
+  button.btn.btn-primary.angle_down img,
+  button.btn.btn-primary.angle_down1 img {
+    width: 28px !important;
+  }
+  span.pairsWithSymbol {
+    font-size: 14px;
+  }
+  .footer_menu li a {
+    font-size: 10px;
+  }
+  .form-inline.my-2.pl-md-3.pl-0 {
+    display: inline-grid;
+  }
+  .bsc_btn {
+    margin: 5px 0px;
+    display: grid;
+    justify-content: center;
+    width: 85px;
+  }
+  .network_type_area,
+  .show_balance_area {
+    padding: 10px 0;
+  }
+  .img span {
+    font-size: 14px;
+    font-weight: normal;
+  }
+  .img img {
+    width: 32px;
+  }
+  .img,
+  .box-2 {
+    min-width: 143px;
+    text-align: center;
+  }
+  .box-4 {
+    min-width: 111px;
+  }
+}
+
+/*// Small devices (landscape phones, 576px and up)*/
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .WSUM_value {
+    width: 100%;
+  }
+  .WSUM {
+    width: 100%;
+  }
+  .swap_tab_03 {
+    margin: 15px 0;
+  }
+  .footer_menu li a {
+    font-size: 10px;
+  }
+  .swap_tab_0_1 {
+    border-radius: 10px;
+  }
+}
+
+/*// Medium devices (tablets, 768px and up)*/
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .WSUM_value {
+    width: 100%;
+  }
+  .swap_tab_0_1 {
+    border-radius: 10px;
+  }
+}
+
+/*Large devices (desktops, 992px and up)*/
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  img.rubik_logo {
+    width: 155px;
+  }
+  .swap_tab_0_1 {
+    border-radius: 10px;
+  }
+  .navbar-light .navbar-nav .active > .nav-link,
+  .navbar-light .navbar-nav .nav-link.active,
+  .navbar-light .navbar-nav .nav-link.show,
+  .navbar-light .navbar-nav .show > .nav-link {
+    font-size: 13px;
+  }
+  span#showNetworkType,
+  span#showBalance {
+    font-size: 13px;
+  }
+  .bsc_btn {
+    margin: 5px 4px;
+    font-size: 13px;
+  }
+  .bh65cx span {
+    width: 80px;
+    font-size: 13px;
+  }
+  .btn_Connect_light {
+    padding: 7px 9px;
+    font-size: 13px;
+  }
+}
+
+/*// Extra large devices (large desktops, 1200px and up)*/
+/* @media (min-width: 1200px) { ... } */

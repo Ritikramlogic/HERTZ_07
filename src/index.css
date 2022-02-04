@@ -1,0 +1,36 @@
+body {
+  font-family: "Rubik", sans-serif !important;
+  background-color: #02162b;
+  letter-spacing: 1px;
+  overflow-x: hidden;
+  font-size: 14px;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+.navbar-brand a:hover {
+  color: black;
+}
+
+.navbar__link--active {
+  color: black;
+}
+
+.modal_pd {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  background-image: url();
+}
+
+.dropdown-item:focus,
+.dropdown-item:hover {
+  background-color: #0053ac;
+}
+
+.dropdown-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
