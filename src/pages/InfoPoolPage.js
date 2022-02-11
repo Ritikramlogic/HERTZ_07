@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { volData, TokenData, TransSwapping, TopPools, PoolInfo } from "../Api";
+import { volData, TokenData, TopPools, PoolInfo } from "../Api";
 
 import LineChart from "../Components/Chart";
 import { store } from "../Redux/store";
@@ -11,7 +11,6 @@ class InforPoolPage extends React.Component {
       volData: null,
       TokenData: null,
       TopPools: null,
-      TransSwapping: null,
       PoolInfo: null,
       //   poolPair: "bshd_htz",
     };
@@ -68,8 +67,7 @@ class InforPoolPage extends React.Component {
                         class="nav-link"
                         id="pills-token-tab"
                         data-toggle="pill"
-                        // href="#pills-token"
-                        to="/tokeninfo"
+                        to="/tokens"
                         role="tab"
                         aria-controls="pills-token"
                         aria-selected="false"

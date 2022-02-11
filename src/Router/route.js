@@ -12,6 +12,7 @@ import WithdrawLiquidityPage from "../pages/WithdrawLiquidityPage";
 import { PoolInfo } from "../Api";
 import InforPoolPage from "../pages/InfoPoolPage";
 import InfoTokensPage from "../pages/InfoTokensPage";
+import TopTokens from "../pages/TopTokens";
 export default function Routers() {
   return (
     <>
@@ -24,6 +25,7 @@ export default function Routers() {
           <Route path="/info" component={InfoPage} />
           <Route path="/poolinfo" component={InforPoolPage} />
           <Route path="/tokeninfo" component={InfoTokensPage} />
+          <Route path="/tokens" component={TopTokens} />
           <Route path="/withdraw" component={WithdrawLiquidityPage} />
         </Layout1>
       </Switch>

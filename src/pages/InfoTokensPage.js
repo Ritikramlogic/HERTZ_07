@@ -2,13 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import LineChart from "../Components/Chart";
 import { store } from "../Redux/store";
-import {
-  volData,
-  TokenData,
-  TransSwapping,
-  TopPools,
-  TokenInfoPair,
-} from "../Api";
+import { volData, TokenData, TopPools, TokenInfoPair } from "../Api";
 
 class InfoTokensPage extends React.Component {
   constructor(props) {
@@ -17,7 +11,6 @@ class InfoTokensPage extends React.Component {
       volData: null,
       TokenData: null,
       TopPools: null,
-      TransSwapping: null,
       PoolInfo: null,
       //   poolPair: "bshd_htz",
     };
@@ -35,60 +28,6 @@ class InfoTokensPage extends React.Component {
   render() {
     return (
       <>
-        <div class="overview_main_div1 my-md-5 my-4">
-          <div class="container overview_main_div rounded py-3">
-            <div class="row">
-              <div class="col-md-12 co-12">
-                <div class="over_tab_view pt-1">
-                  <ul class="nav nav-pills" id="pills-tab" role="tablist">
-                    <li class="nav-item">
-                      <Link
-                        class="nav-link "
-                        id="pills-overview-tab"
-                        data-toggle="pill"
-                        // href="#pills-overview"
-                        to="/info"
-                        role="tab"
-                        aria-controls="pills-overview"
-                        aria-selected="true"
-                      >
-                        Overview
-                      </Link>
-                    </li>
-                    <li class="nav-item">
-                      <Link
-                        class="nav-link "
-                        id="pills-pools-tab"
-                        data-toggle="pill"
-                        href="#pills-pools"
-                        to="/poolinfo"
-                        role="tab"
-                        aria-controls="pills-pools-tab"
-                        aria-selected="false"
-                      >
-                        Pools
-                      </Link>
-                    </li>
-                    <li class="nav-item">
-                      <Link
-                        class="nav-link active"
-                        id="pills-token-tab"
-                        data-toggle="pill"
-                        // href="#pills-token"
-                        to="/tokeninfo"
-                        role="tab"
-                        aria-controls="pills-token"
-                        aria-selected="true"
-                      >
-                        Tokens
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
         {/* {/* //Section 2 */}
         <div class="overview_main_2nd my-md-5 my-4">
           {" "}
@@ -124,7 +63,9 @@ class InfoTokensPage extends React.Component {
                                                     <a href="#">Home</a>
                                                   </li>
                                                   <li class="breadcrumb-item">
-                                                    <a href="#">Pools</a>
+                                                    <Link to="/info">
+                                                      Token
+                                                    </Link>
                                                   </li>
                                                   <li
                                                     class="breadcrumb-item active"
@@ -144,12 +85,13 @@ class InfoTokensPage extends React.Component {
                                       <div class="htz_img_jfg py-md-3 py-4">
                                         <div class="d-flex align-items-center">
                                           <span>
+                                            {console.log(this.state.PoolInfo)}
                                             <img
                                               // src={
                                               //   this.state.PoolInfo === null
                                               //     ? "#"
                                               //     : this.state.PoolInfo
-                                              //         .tokenAResult.image
+                                              //         .tokenAResult
                                               // }
                                               width="30"
                                               style={{ borderRadius: "50%" }}
@@ -164,7 +106,7 @@ class InfoTokensPage extends React.Component {
                                           </h2>
                                         </div>
                                       </div>
-                                      <div class="htz_liquidity_add py-md-5 py-4">
+                                      {/* <div class="htz_liquidity_add py-md-5 py-4">
                                         <div class="row">
                                           <div class="col-md col-12">
                                             <div class="d-md-flex align-items-center">
@@ -187,7 +129,7 @@ class InfoTokensPage extends React.Component {
                                                 &nbsp;&nbsp;
                                                 <h6 class="text-white font-weight-normal m-0">
                                                   1{" "}
-                                                  {/* {this.state.PoolInfo === null
+                                                  {this.state.PoolInfo === null
                                                     ? "#"
                                                     : this.state.PoolInfo.token[1].toUpperCase()}
                                                   &nbsp;=&nbsp;
@@ -197,7 +139,7 @@ class InfoTokensPage extends React.Component {
                                                         .tokenAPrice}
                                                   {this.state.PoolInfo === null
                                                     ? "#"
-                                                    : this.state.PoolInfo.token[0].toUpperCase()} */}
+                                                    : this.state.PoolInfo.token[0].toUpperCase()}
                                                 </h6>
                                               </a>
                                             </div>
@@ -206,7 +148,7 @@ class InfoTokensPage extends React.Component {
                                             <div class="d-flex align-items-center"></div>
                                           </div>
                                         </div>
-                                      </div>
+                                      </div> */}
                                       <div class="volume_liquidity">
                                         <div class="row">
                                           <div class="col-md-4 col-12">

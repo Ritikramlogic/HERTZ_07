@@ -1,5 +1,5 @@
 import React from "react";
-import { volData, TokenData, TransSwapping, TopPools, PoolInfo } from "../Api";
+import { volData, TokenData, TransacSwapping, TopPools } from "../Api";
 import $ from "jquery";
 import LineChart from "../Components/Chart";
 import { Link } from "react-router-dom";
@@ -12,7 +12,7 @@ class InfoPage extends React.Component {
       volData: null,
       TokenData: null,
       TopPools: null,
-      TransSwapping: null,
+      TranscationSwapping: null,
       PoolInfo: null,
     };
   }
@@ -21,6 +21,7 @@ class InfoPage extends React.Component {
       volData: await volData(),
       TokenData: await TokenData(),
       TopPools: await TopPools(),
+      // TranscationSwapping: await TransacSwapping(),
     });
   }
 
@@ -96,7 +97,7 @@ class InfoPage extends React.Component {
                         class="nav-link"
                         id="pills-token-tab"
                         data-toggle="pill"
-                        to="/tokeninfo"
+                        to="/tokens"
                         role="tab"
                         aria-controls="pills-token"
                         aria-selected="false"
@@ -230,7 +231,9 @@ class InfoPage extends React.Component {
                         </div>
                         <div class="top_overview py-4">
                           <div class="py-3">
-                            <h4 class="text-white">Top Tokens</h4>
+                            <h4 class="text-white" id="top_tokens">
+                              Top Tokens
+                            </h4>
                           </div>
                           <div class="top_overview_tables p-3">
                             <div class=" table-responsive">
@@ -279,6 +282,11 @@ class InfoPage extends React.Component {
                                     : this.state.TokenData.row.map(
                                         (data, key) => (
                                           <>
+                                            {console.log(
+                                              this.state.TokenData.tokenResult[
+                                                key
+                                              ] === null
+                                            )}
                                             <tr key={key}>
                                               <th scope="row">
                                                 <span class="text-white font-weight-normal">
@@ -290,11 +298,18 @@ class InfoPage extends React.Component {
                                                   <div class="font-weight-normal">
                                                     <span>
                                                       <img
-                                                        // src={
-                                                        //   this.state.TokenData
-                                                        //     .tokenResult[key]
-                                                        //     .image
-                                                        // }
+                                                        src={
+                                                          this.state.TokenData
+                                                            .tokenResult[
+                                                            key
+                                                          ] === null
+                                                            ? "https://ramlogics.com/Defi_Hertz/wp-content/themes/twentytwenty/assets/images/default.png"
+                                                            : this.state
+                                                                .TokenData
+                                                                .tokenResult[
+                                                                key
+                                                              ].image
+                                                        }
                                                         width="20"
                                                         class="token_img_ss"
                                                       />
@@ -548,7 +563,7 @@ class InfoPage extends React.Component {
                         {/* <!--================================TOP POOLS TABLES END=============================--> */}
 
                         {/* <!--================================TOP TRANSACTIONS TABLES Start=============================--> */}
-                        <div class="top_overview py-4">
+                        {/* <div class="top_overview py-4">
                           <div class="py-3">
                             <h4 class="text-white">Transactions</h4>
                           </div>
@@ -653,75 +668,7 @@ class InfoPage extends React.Component {
                                         </th>
                                       </tr>
                                     </thead>
-                                    <tbody>
-                                      {this.state.TransSwapping === null
-                                        ? null
-                                        : this.state.TransSwapping.swappingsArray.map(
-                                            (data, key) => (
-                                              <>
-                                                <tr key={key}>
-                                                  <th scope="row">
-                                                    <span class="text-white font-weight-normal">
-                                                      <div
-                                                        class="font-weight-normal"
-                                                        style={{
-                                                          float: "left",
-                                                        }}
-                                                      >
-                                                        Swap&nbsp;
-                                                        {data.symbol.toUpperCase()}
-                                                        &nbsp; for &nbsp;
-                                                        {data.received_token.toUpperCase()}
-                                                      </div>
-                                                    </span>
-                                                  </th>
-                                                  <td>
-                                                    <span class="text-white">
-                                                      <div
-                                                        class="font-weight-normal"
-                                                        style={{
-                                                          float: "left",
-                                                        }}
-                                                      >
-                                                        {data.received_amount}
-                                                        &nbsp;
-                                                        {data.symbol.toUpperCase(
-                                                          0
-                                                        )}
-                                                      </div>
-                                                    </span>
-                                                  </td>
-                                                  <td>
-                                                    <span class="text-white">
-                                                      <div
-                                                        class="font-weight-normal"
-                                                        style={{
-                                                          float: "left",
-                                                        }}
-                                                      >
-                                                        {data.transfer_amount}
-                                                        &nbsp;
-                                                        {data.received_token.toUpperCase()}
-                                                      </div>
-                                                    </span>
-                                                  </td>
-                                                  <td>
-                                                    <span class="text_green">
-                                                      <div
-                                                        class="font-weight-normal text_pink"
-                                                        style={{
-                                                          float: "left",
-                                                        }}
-                                                      >
-                                                        {data.time}
-                                                      </div>
-                                                    </span>
-                                                  </td>
-                                                </tr>
-                                              </>
-                                            )
-                                          )}
-                                    </tbody>
+                                    <tbody></tbody>
                                   </table>
                                 </div>
                               </div>
@@ -762,14 +709,7 @@ class InfoPage extends React.Component {
                                         </th>
                                       </tr>
                                     </thead>
-                                    <tbody>
-                                      {" "}
-                                      {this.state.TransSwapping === null
-                                        ? null
-                                        : this.state.TransSwapping.swappingsArray.map(
-                                            (data, key) => console.log(data)
-                                          )}
-                                    </tbody>
+                                    <tbody></tbody>
                                   </table>
                                 </div>
                               </div>
@@ -816,7 +756,7 @@ class InfoPage extends React.Component {
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </div> */}
                         {/* <!--================================TOP TRANSACTIONS TABLES END=============================--> */}
                       </div>
                     </div>
