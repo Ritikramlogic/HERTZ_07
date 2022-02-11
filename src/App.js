@@ -32,13 +32,13 @@ function App() {
   return (
     <div className="App">
       <Routers />
-      {/* <button
+      <button
         onClick={() => {
           console.log(store.getState());
         }}
       >
         Click me
-      </button> */}
+      </button>
     </div>
   );
 }

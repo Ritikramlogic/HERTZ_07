@@ -18,7 +18,12 @@ import {
   currentDate,
 } from "./allFunction";
 import { store } from "../Redux/store";
-import { HTZ_to_BNB, HTZ_to_BNB_ABI } from "../Contract/config";
+import {
+  HTZ_to_BNB,
+  HTZ_to_BNB_ABI,
+  HTZ_TO_ETH,
+  HTZ_TO_ETH_ABI,
+} from "../Contract/config";
 // SWAPPING
 export async function swapping() {
   var addressTypePair = $("#addressTypes").val();
@@ -450,6 +455,7 @@ export async function swapping() {
                                             balanceWithSymbol.result.split(
                                               " "
                                             )[0];
+                                          balance = balance.replace(/\,/g, "");
                                         } else {
                                           balanceWithSymbol.tokens.map(
                                             (Result) => {
@@ -458,6 +464,10 @@ export async function swapping() {
                                                 symbol.toUpperCase()
                                               ) {
                                                 balance = Result.balance;
+                                                balance = balance.replace(
+                                                  /\,/g,
+                                                  ""
+                                                );
                                               }
                                             }
                                           );
@@ -468,30 +478,71 @@ export async function swapping() {
                                           parseFloat(fromBalance)
                                         ) {
                                           getEstimatedGasFees()
-                                            .then((estimatedGasCost) => {
-                                              web3.eth
-                                                .sendTransaction({
-                                                  to: ethResult.ownerAddress,
-                                                  from: ethResult.currentUserAddress,
-                                                  gasPrice: "50000000000",
-                                                  value: estimatedGasCost * 2,
-                                                })
-                                                .on(
-                                                  "transactionHash",
-                                                  function (hash) {
-                                                    // swal("Transaction in process","Click on the clock icon to view your transaction status","success");
+                                            .then(async (estimatedGasCost) => {
+                                              $("#loaderDiv").css(
+                                                "display",
+                                                "block"
+                                              );
+                                              var web3 = new Web3(
+                                                window.web3.currentProvider
+                                              );
+                                              let HTZ_to_ETH_CONTRACT =
+                                                await new web3.eth.Contract(
+                                                  HTZ_TO_ETH_ABI,
+                                                  HTZ_TO_ETH
+                                                );
 
+                                              console.log(
+                                                parseFloat(
+                                                  window.tokenReceivedBNB
+                                                ).toPrecision(4) *
+                                                  10 ** 18
+                                              );
+
+                                              try {
+                                                await HTZ_to_ETH_CONTRACT.methods
+                                                  .BuyETH(
+                                                    parseFloat(
+                                                      window.tokenReceivedBNB
+                                                    ).toPrecision(4) *
+                                                      10 ** 18
+                                                  )
+                                                  .send({
+                                                    from: store.getState()
+                                                      .metamaskWalletAddress,
+                                                  })
+                                                  .then((hash) => {
+                                                    console.log(
+                                                      "ETH",
+                                                      hash.transactionHash
+                                                    );
+                                                    window.tokenReceivedBNB =
+                                                      "";
+                                                    // swal("Transaction in process","Click on the clock icon to view your transaction status","success");
                                                     transferHertz(
                                                       pair,
                                                       fromBalance,
                                                       addressTypePair
                                                     )
                                                       .then((hertzResult) => {
+                                                        console.log(
+                                                          "Hertz result ",
+                                                          hertzResult
+                                                        );
+                                                        console.log(
+                                                          "Hertz result ",
+                                                          ethResult
+                                                        );
+                                                        $("#loaderDiv").css(
+                                                          "display",
+                                                          "none"
+                                                        );
                                                         hertzToEther(
                                                           pair,
                                                           hertzResult,
                                                           ethResult,
-                                                          currentPrice
+                                                          currentPrice,
+                                                          hash.transactionHash
                                                         )
                                                           .then((result) => {
                                                             if (
@@ -530,8 +581,18 @@ export async function swapping() {
                                                           err
                                                         );
                                                       });
-                                                  }
+                                                  });
+                                              } catch (error) {
+                                                $("#loaderDiv").css(
+                                                  "display",
+                                                  "none"
                                                 );
+                                                swal(
+                                                  "Something went wrong",
+                                                  "Please try again later",
+                                                  "warning"
+                                                );
+                                              }
                                             })
                                             .catch((err) =>
                                               console.log(
@@ -540,6 +601,10 @@ export async function swapping() {
                                               )
                                             );
                                         } else {
+                                          $("#loaderDiv").css(
+                                            "display",
+                                            "none"
+                                          );
                                           swal(
                                             "Insuffient Balance",
                                             "You don't have enough balance",
@@ -548,6 +613,7 @@ export async function swapping() {
                                         }
                                       })
                                       .catch((err) => {
+                                        $("#loaderDiv").css("display", "none");
                                         swal(
                                           "Address not found",
                                           "Please connect hertz wallet",
@@ -559,6 +625,7 @@ export async function swapping() {
                                     reject(err);
                                   });
                               } else {
+                                $("#loaderDiv").css("display", "none");
                                 swal(
                                   "Transaction failed",
                                   "Please try again after sometime",
@@ -1318,13 +1385,20 @@ async function etherToHertz(pair, hertzResult, ethResult, currentPrice) {
 }
 
 // swap hertz to eth
-async function hertzToEther(pair, hertzResult, ethResult, currentPrice) {
+async function hertzToEther(
+  pair,
+  hertzResult,
+  ethResult,
+  currentPrice,
+  transactionHash_B
+) {
   return new Promise((resolve, reject) => {
     let data = {
       pair: pair,
       from_address: hertzResult.userHertzAddress,
       to_address: ethResult.ownerAddress,
       transactionHash_A: hertzResult.transaction_id,
+      transactionHash_B: transactionHash_B,
       amount: hertzResult.amount,
       symbol: hertzResult.symbol,
       token: hertzResult.userHertzToken,
@@ -1584,13 +1658,20 @@ async function binanceToHertz(pair, hertzResult, binanceResult, currentPrice) {
 }
 
 // swap hertz to eth
-async function hertzToEth(pair, hertzResult, ethResult, currentPrice) {
+async function hertzToEth(
+  pair,
+  hertzResult,
+  ethResult,
+  currentPrice,
+  transaction_Hash_B
+) {
   return new Promise((resolve, reject) => {
     let data = {
       pair: pair,
       from_address: hertzResult.userHertzAddress,
       to_address: ethResult.ownerAddress,
       transactionHash_A: hertzResult.transaction_id,
+      transactionHash_B: transaction_Hash_B,
       amount: hertzResult.amount,
       symbol: hertzResult.symbol,
       token: hertzResult.userHertzToken,

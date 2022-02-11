@@ -1,8 +1,8 @@
 import { store } from "../Redux/store";
-
+import axios from "axios";
 // Get Token Details when user login
 const BASE_URL = "https://api.hertz-network.com";
-const INFO_URL = "http://localhost:3001";
+const INFO_URL = "http://ramlogics.com/backend/HERTZ_PHP/";
 
 //Two factor Authentication
 export async function do2FAuthentication(_code) {
@@ -146,11 +146,8 @@ export async function transferHertzFromAdminToUser(address, symbol, amount) {
 
 export async function volData() {
   let _data;
-  await fetch(INFO_URL, {
+  await fetch("https://ramlogics.com/backend/HERTZ_PHP/volData.php", {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
   })
     .then((res) => res.json())
     .then((data) => {
@@ -161,11 +158,8 @@ export async function volData() {
 
 export async function TokenData() {
   let _data;
-  await fetch(INFO_URL + "/top", {
+  await fetch("https://ramlogics.com/backend/HERTZ_PHP/topTokens.php", {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
   })
     .then((res) => res.json())
     .then((data) => {
@@ -188,6 +182,64 @@ export async function sumAmountAnalytics(symbol) {
     .then((res) => res.json())
     .then((data) => {
       _data = data;
+    });
+  return _data;
+}
+
+export async function TopPools() {
+  let _data;
+  await fetch("https://ramlogics.com/backend/HERTZ_PHP/topPools.php", {
+    method: "GET",
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      _data = data;
+    });
+  return _data;
+}
+
+export async function TransSwapping() {
+  let _data;
+  await fetch("https://ramlogics.com/backend/HERTZ_PHP/TransSwapping.php", {
+    method: "GET",
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      _data = data;
+      console.log(data);
+    });
+  return _data;
+}
+
+export async function PoolInfo(pairData) {
+  let _data;
+  await fetch(
+    "https://ramlogics.com/backend/HERTZ_PHP/topPoolsPairs.php?pair=" +
+      pairData,
+    {
+      method: "GET",
+    }
+  )
+    .then((res) => res.json())
+    .then((data) => {
+      _data = data;
+      console.log(data);
+    });
+  return _data;
+}
+
+export async function TokenInfoPair(pairData) {
+  let _data;
+  await fetch(
+    "https://ramlogics.com/backend/HERTZ_PHP/topTokenpair.php?pair=" + pairData,
+    {
+      method: "GET",
+    }
+  )
+    .then((res) => res.json())
+    .then((data) => {
+      _data = data;
+      console.log(data);
     });
   return _data;
 }

@@ -31,10 +31,7 @@
       integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
       crossorigin="anonymous"
     />
-    <link
-      href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"
-      crossorigin="anonymous"
-    />
+
     <meta name="description" content="Hertz Network" />
     <link
       rel="apple-touch-icon"
@@ -85,13 +82,63 @@
       src="https://unpkg.com/web3modal@1.9.0/dist/index.js"
     ></script>
     <script src="https://ramlogics.com/Defi_Hertz/wp-content/themes/twentytwenty/assets/js/qrcode.min.js"></script>
+    <script>
+      window.onload = () => {
+        // Create two variables with names of months and days of the week in the array
+        var monthNames = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+        var dayNames = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
+
+        // Create an object newDate()
+        var newDate = new Date();
+        // Retrieve the current date from the Date object
+        newDate.setDate(newDate.getDate());
+        // At the output of the day, date, month and year
+        $("#Date").html(
+          dayNames[newDate.getDay()] +
+            " " +
+            newDate.getDate() +
+            " " +
+            monthNames[newDate.getMonth()] +
+            " " +
+            newDate.getFullYear()
+        );
+        $("#Dateday").html(
+          dayNames[newDate.getDay()] +
+            " " +
+            newDate.getDate() +
+            " " +
+            monthNames[newDate.getMonth()] +
+            " " +
+            newDate.getFullYear()
+        );
+      };
+    </script>
   </head>
 
   <!-- Body start  -->
   <body style="padding-right: 0px">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-
-    <!-- <script src="../src/Services/farm.js"></script> -->
   </body>
 </html>

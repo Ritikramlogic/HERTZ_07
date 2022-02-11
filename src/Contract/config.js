@@ -635,88 +635,57 @@ export const HTZ_to_BNB_ABI = [
     type: "function",
   },
 ];
-
-// export const ERC20_to_HTZ = "0x218c11cc34412D922B4b7a2902370436708c9c5A";
-// export const ERC20_to_HTZ_ABI = [
-//   {
-//     inputs: [
-//       {
-//         internalType: "address",
-//         name: "_ContractAddress",
-//         type: "address",
-//       },
-//       {
-//         internalType: "address",
-//         name: "_adminAddress",
-//         type: "address",
-//       },
-//     ],
-//     stateMutability: "nonpayable",
-//     type: "constructor",
-//   },
-//   {
-//     inputs: [
-//       {
-//         internalType: "uint256",
-//         name: "ammount",
-//         type: "uint256",
-//       },
-//     ],
-//     name: "HTZ_ERC20_Swap",
-//     outputs: [],
-//     stateMutability: "nonpayable",
-//     type: "function",
-//   },
-//   {
-//     inputs: [
-//       {
-//         internalType: "address",
-//         name: "_adminAddress",
-//         type: "address",
-//       },
-//     ],
-//     name: "changeAdminAddress",
-//     outputs: [],
-//     stateMutability: "nonpayable",
-//     type: "function",
-//   },
-//   {
-//     inputs: [
-//       {
-//         internalType: "address",
-//         name: "_ContractAddress",
-//         type: "address",
-//       },
-//     ],
-//     name: "changeContractAddress",
-//     outputs: [],
-//     stateMutability: "nonpayable",
-//     type: "function",
-//   },
-//   {
-//     inputs: [],
-//     name: "checkAdminAddress",
-//     outputs: [
-//       {
-//         internalType: "address",
-//         name: "",
-//         type: "address",
-//       },
-//     ],
-//     stateMutability: "view",
-//     type: "function",
-//   },
-//   {
-//     inputs: [],
-//     name: "checkContractAddress",
-//     outputs: [
-//       {
-//         internalType: "address",
-//         name: "",
-//         type: "address",
-//       },
-//     ],
-//     stateMutability: "view",
-//     type: "function",
-//   },
-// ];
+//HTZ to ETH for Trade.js
+export const HTZ_TO_ETH = "0x2A9894B26d57cc6005DB57c2Ed75B99FdEfa324D";
+export const HTZ_TO_ETH_ABI = [
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_ContractAddress",
+        type: "address",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "BuyETH",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_ContractAddress",
+        type: "address",
+      },
+    ],
+    name: "changeAddress",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "checkContractAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+];

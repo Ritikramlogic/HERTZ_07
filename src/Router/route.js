@@ -9,6 +9,9 @@ import FramsPage from "../pages/FarmsPage";
 import LiquidityPage from "../pages/LiquidityPage";
 import InfoPage from "../pages/InfoPage";
 import WithdrawLiquidityPage from "../pages/WithdrawLiquidityPage";
+import { PoolInfo } from "../Api";
+import InforPoolPage from "../pages/InfoPoolPage";
+import InfoTokensPage from "../pages/InfoTokensPage";
 export default function Routers() {
   return (
     <>
@@ -19,6 +22,8 @@ export default function Routers() {
           <Route path="/farm" component={FramsPage} />
           <Route path="/trade" component={TradePage} />
           <Route path="/info" component={InfoPage} />
+          <Route path="/poolinfo" component={InforPoolPage} />
+          <Route path="/tokeninfo" component={InfoTokensPage} />
           <Route path="/withdraw" component={WithdrawLiquidityPage} />
         </Layout1>
       </Switch>

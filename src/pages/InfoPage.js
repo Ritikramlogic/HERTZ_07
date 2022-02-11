@@ -1,6 +1,9 @@
 import React from "react";
-import { volData, TokenData, sumAmountAnalytics } from "../Api";
+import { volData, TokenData, TransSwapping, TopPools, PoolInfo } from "../Api";
+import $ from "jquery";
 import LineChart from "../Components/Chart";
+import { Link } from "react-router-dom";
+import { store } from "../Redux/store";
 
 class InfoPage extends React.Component {
   constructor(props) {
@@ -8,13 +11,17 @@ class InfoPage extends React.Component {
     this.state = {
       volData: null,
       TokenData: null,
+      TopPools: null,
+      TransSwapping: null,
+      PoolInfo: null,
     };
   }
   async componentDidMount() {
-    // this.setState({
-    //   volData: await volData(),
-    //   TokenData: await TokenData(),
-    // });
+    this.setState({
+      volData: await volData(),
+      TokenData: await TokenData(),
+      TopPools: await TopPools(),
+    });
   }
 
   // render() {
@@ -47,9 +54,6 @@ class InfoPage extends React.Component {
   //   );
   // }
   render() {
-    {
-      console.log(this.state.TokenData);
-    }
     return (
       <>
         {/* Iframe code end  */}
@@ -74,30 +78,31 @@ class InfoPage extends React.Component {
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a
+                      <Link
                         class="nav-link"
                         id="pills-pools-tab"
                         data-toggle="pill"
-                        href="#pills-pools"
+                        // href="#pills-pools"
+                        to="/poolinfo"
                         role="tab"
                         aria-controls="pills-pools-tab"
                         aria-selected="false"
                       >
                         Pools
-                      </a>
+                      </Link>
                     </li>
                     <li class="nav-item">
-                      <a
+                      <Link
                         class="nav-link"
                         id="pills-token-tab"
                         data-toggle="pill"
-                        href="#pills-token"
+                        to="/tokeninfo"
                         role="tab"
                         aria-controls="pills-token"
                         aria-selected="false"
                       >
                         Tokens
-                      </a>
+                      </Link>
                     </li>
                   </ul>
                 </div>
@@ -117,7 +122,7 @@ class InfoPage extends React.Component {
           </div>
         </div>
 
-        {/* //Section 2 */}
+        {/* {/* //Section 2 */}
         <div class="overview_main_2nd my-md-5 my-4">
           {" "}
           <div class="container px-md-0">
@@ -147,10 +152,12 @@ class InfoPage extends React.Component {
                                       </h6>
                                       &nbsp;
                                       <h4 class="text_pink font-weight-normal">
-                                        ${" "}
-                                        {/* {this.state.volData === null
+                                        $
+                                        {this.state.volData === null
                                           ? 0
-                                          : this.state.volData.volData} */}
+                                          : this.state.volData.lvol.toPrecision(
+                                              3
+                                            )}
                                       </h4>
                                     </div>
                                     <div class="clock">
@@ -165,11 +172,12 @@ class InfoPage extends React.Component {
                                       background: "#fff",
                                     }}
                                   >
-                                    {/* {this.state.volData === null ? null : (
+                                    {this.state.volData === null ? null : (
                                       <LineChart
-                                        Chartdata={this.state.volData}
+                                        Dataset={this.state.volData.LdataPoints}
+                                        label="Liquidity"
                                       />
-                                    )} */}
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -186,15 +194,17 @@ class InfoPage extends React.Component {
                                       </h6>
                                       &nbsp;
                                       <h4 class="text_pink font-weight-normal">
-                                        $
+                                        ${" "}
+                                        {this.state.volData === null
+                                          ? 0
+                                          : this.state.volData.vol.toPrecision(
+                                              3
+                                            )}
                                       </h4>
                                     </div>
-                                    <div class="clock">
-                                      <div
-                                        class="text-white"
-                                        id="Dateday"
-                                      ></div>
-                                    </div>
+                                  </div>
+                                  <div class="clock">
+                                    <div class="text-white" id="Dateday"></div>
                                   </div>
                                   <div
                                     id="chartContainer"
@@ -204,7 +214,14 @@ class InfoPage extends React.Component {
                                       background: "#fff",
                                     }}
                                   >
-                                    {/* <LineChart /> */}
+                                    {this.state.volData === null ? null : (
+                                      <LineChart
+                                        Dataset={
+                                          this.state.volData.volDataPoints
+                                        }
+                                        label="Volume"
+                                      />
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -259,81 +276,113 @@ class InfoPage extends React.Component {
                                 <tbody>
                                   {this.state.TokenData === null
                                     ? null
-                                    : this.state.TokenData.map((data, key) => (
-                                        <>
-                                          <tr>
-                                            <th scope="row">
-                                              <span class="text-white font-weight-normal">
-                                                {key + 1}
-                                              </span>
-                                            </th>
-                                            <td key={key + 1}>
-                                              <div class="text-white d-flex align-items-center ">
-                                                <div class="font-weight-normal">
-                                                  <span class="">
-                                                    {/* <img src="<?php echo $tokenResult['image']; ?>" width="20" class="token_img_ss"/> */}
+                                    : this.state.TokenData.row.map(
+                                        (data, key) => (
+                                          <>
+                                            <tr key={key}>
+                                              <th scope="row">
+                                                <span class="text-white font-weight-normal">
+                                                  {key + 1}
+                                                </span>
+                                              </th>
+                                              <td key={key + 1}>
+                                                <div class="text-white d-flex align-items-center ">
+                                                  <div class="font-weight-normal">
+                                                    <span>
+                                                      <img
+                                                        // src={
+                                                        //   this.state.TokenData
+                                                        //     .tokenResult[key]
+                                                        //     .image
+                                                        // }
+                                                        width="20"
+                                                        class="token_img_ss"
+                                                      />
+                                                    </span>
+                                                    &nbsp;
+                                                    <Link
+                                                      to="/tokeninfo"
+                                                      onClick={() =>
+                                                        (store.getState().tokenSymbol =
+                                                          data.symbol)
+                                                      }
+                                                    >
+                                                      {data.symbol.toUpperCase()}
+                                                    </Link>
+                                                  </div>
+                                                </div>
+                                              </td>
+                                              <td>
+                                                <span class="text-white">
+                                                  <div class="font-weight-normal">
+                                                    ${" "}
+                                                    {data.price
+                                                      .toString()
+                                                      .substring(0, 6)}
+                                                  </div>
+                                                </span>
+                                              </td>
+                                              <td>
+                                                {(parseFloat(
+                                                  data.max - data.min
+                                                ) /
+                                                  parseFloat(
+                                                    data.max + data.min
+                                                  )) *
+                                                  100 >
+                                                0 ? (
+                                                  <span class="font-weight-normal text_green">
+                                                    <div class="font-weight-normal">
+                                                      $
+                                                      {(
+                                                        (parseFloat(
+                                                          data.max - data.min
+                                                        ) /
+                                                          parseFloat(
+                                                            data.max + data.min
+                                                          )) *
+                                                        100
+                                                      ).toPrecision(4)}
+                                                    </div>
                                                   </span>
-                                                  {data.symbol}
-                                                </div>
-                                              </div>
-                                            </td>
-                                            <td>
-                                              <span class="text-white">
-                                                <div class="font-weight-normal">
-                                                  $ {data.price.toPrecision(4)}
-                                                </div>
-                                              </span>
-                                            </td>
-                                            <td>
-                                              {(
-                                                (data.max - data.min) /
-                                                (data.max + data.min)
-                                              ).toPrecision(6) *
-                                                100 >
-                                              0 ? (
-                                                <span class="font-weight-normal text_green">
+                                                ) : (
+                                                  <span class="font-weight-normal text-danger">
+                                                    <div class="font-weight-normal">
+                                                      $
+                                                      {(
+                                                        (parseFloat(
+                                                          data.max - data.min
+                                                        ) /
+                                                          parseFloat(
+                                                            data.max + data.min
+                                                          )) *
+                                                        100
+                                                      ).toPrecision(4)}
+                                                    </div>
+                                                  </span>
+                                                )}
+                                              </td>
+                                              <td>
+                                                <span class="text-white">
                                                   <div class="font-weight-normal">
-                                                    $
-                                                    {(
-                                                      (data.max - data.min) /
-                                                      (data.max + data.min)
-                                                    ).toPrecision(6) * 100}
+                                                    $ 0.0000
                                                   </div>
                                                 </span>
-                                              ) : (
-                                                <span class="font-weight-normal text-danger">
+                                              </td>
+                                              <td>
+                                                <span class="text-white">
                                                   <div class="font-weight-normal">
-                                                    $
-                                                    {(
-                                                      (data.max - data.min) /
-                                                      (data.max + data.min)
-                                                    ).toPrecision(6) * 100}
+                                                    ${" "}
+                                                    {this.state.TokenData.totalLiquidity[
+                                                      key
+                                                    ].toPrecision(4)}
                                                   </div>
                                                 </span>
-                                              )}
-                                            </td>
-                                            <td>
-                                              <span class="text-white">
-                                                <div class="font-weight-normal">
-                                                  $ 0.0000
-                                                </div>
-                                              </span>
-                                            </td>
-                                            <td>
-                                              <span class="text-white">
-                                                <div class="font-weight-normal">
-                                                  ${" "}
-                                                  {() =>
-                                                    sumAmountAnalytics(
-                                                      data.symbol
-                                                    )
-                                                  }
-                                                </div>
-                                              </span>
-                                            </td>
-                                          </tr>
-                                        </>
-                                      ))}
+                                              </td>
+                                            </tr>
+                                          </>
+                                        )
+                                      )}
                                 </tbody>
                               </table>
                             </div>
@@ -384,7 +433,113 @@ class InfoPage extends React.Component {
                                     </th>
                                   </tr>
                                 </thead>
-                                <tbody></tbody>
+                                <tbody>
+                                  <>
+                                    {this.state.TopPools !== null
+                                      ? this.state.TopPools.tokenAResult.map(
+                                          (data, key) => (
+                                            <>
+                                              <tr key={key}>
+                                                <th scope="row">
+                                                  <span class="text-white font-weight-normal">
+                                                    {key + 1}
+                                                  </span>
+                                                </th>
+                                                <td>
+                                                  <div class="text-white d-flex align-items-center ">
+                                                    <Link
+                                                      // href={
+                                                      //   "https://ramlogics.com/poolinfo.php/?pair=" +
+                                                      //   this.state.TopPools
+                                                      //     .swappings[key].pair
+                                                      // }
+                                                      to="/poolinfo"
+                                                      onClick={() =>
+                                                        (store.getState().poolPair =
+                                                          this.state.TopPools.rowArray[
+                                                            key
+                                                          ].pair)
+                                                      }
+                                                      class="font-weight-normal"
+                                                    >
+                                                      <span class="">
+                                                        <img
+                                                          src={data.image}
+                                                          width="20"
+                                                          class="token_img_ss"
+                                                        />
+                                                        <img
+                                                          src={data.image}
+                                                          width="20"
+                                                          class="token_img_ss"
+                                                        />
+                                                      </span>
+                                                      &nbsp;{" "}
+                                                      {data.tokens.toUpperCase()}
+                                                      /
+                                                      {this.state.TopPools
+                                                        .tokenBResult[key] ===
+                                                      null
+                                                        ? "###"
+                                                        : this.state.TopPools.tokenBResult[
+                                                            key
+                                                          ].tokens.toUpperCase()}
+                                                    </Link>
+                                                  </div>
+                                                </td>
+                                                <td>
+                                                  <span class="text-white">
+                                                    <div class="font-weight-normal">
+                                                      {(
+                                                        this.state.TopPools
+                                                          .swaprow24[key] *
+                                                        0.001
+                                                      ).toPrecision(4)}
+                                                    </div>
+                                                  </span>
+                                                </td>
+                                                <td>
+                                                  <span class="text-white">
+                                                    <div class="font-weight-normal">
+                                                      {(
+                                                        this.state.TopPools
+                                                          .swaprow7days[key] *
+                                                        0.001
+                                                      ).toPrecision(4)}
+                                                    </div>
+                                                  </span>
+                                                </td>
+                                                <td>
+                                                  <span class="text-white">
+                                                    <div class="font-weight-normal">
+                                                      ${" "}
+                                                      {(
+                                                        this.state.TopPools
+                                                          .totalRewards[key] *
+                                                        0.001
+                                                      ).toPrecision(4)}
+                                                    </div>
+                                                  </span>
+                                                </td>
+                                                <td>
+                                                  <span class="text-white">
+                                                    <div class="font-weight-normal">
+                                                      $
+                                                      {(
+                                                        this.state.TopPools
+                                                          .totalLiquidity[key] *
+                                                        0.001
+                                                      ).toPrecision(4)}
+                                                    </div>
+                                                  </span>
+                                                </td>
+                                              </tr>
+                                            </>
+                                          )
+                                        )
+                                      : null}
+                                  </>
+                                </tbody>
                               </table>
                             </div>
                           </div>
@@ -457,28 +612,116 @@ class InfoPage extends React.Component {
                                     <thead>
                                       <tr>
                                         <th scope="col">
-                                          <span class="text-white font-weight-normal">
+                                          <span
+                                            class="text-white font-weight-normal"
+                                            style={{
+                                              float: "left",
+                                            }}
+                                          >
                                             Action{" "}
                                           </span>
                                         </th>
                                         <th scope="col">
-                                          <span class="text-white font-weight-normal">
+                                          <span
+                                            class="text-white font-weight-normal"
+                                            style={{
+                                              float: "left",
+                                            }}
+                                          >
                                             Token Amount{" "}
                                           </span>
                                         </th>
                                         <th scope="col">
-                                          <span class="text-white font-weight-normal">
+                                          <span
+                                            class="text-white font-weight-normal"
+                                            style={{
+                                              float: "left",
+                                            }}
+                                          >
                                             Token Amount{" "}
                                           </span>
                                         </th>
                                         <th scope="col">
-                                          <span class="text-white font-weight-normal">
+                                          <span
+                                            class="text-white font-weight-normal"
+                                            style={{
+                                              float: "left",
+                                            }}
+                                          >
                                             Date{" "}
                                           </span>
                                         </th>
                                       </tr>
                                     </thead>
-                                    <tbody></tbody>
+                                    <tbody>
+                                      {this.state.TransSwapping === null
+                                        ? null
+                                        : this.state.TransSwapping.swappingsArray.map(
+                                            (data, key) => (
+                                              <>
+                                                <tr key={key}>
+                                                  <th scope="row">
+                                                    <span class="text-white font-weight-normal">
+                                                      <div
+                                                        class="font-weight-normal"
+                                                        style={{
+                                                          float: "left",
+                                                        }}
+                                                      >
+                                                        Swap&nbsp;
+                                                        {data.symbol.toUpperCase()}
+                                                        &nbsp; for &nbsp;
+                                                        {data.received_token.toUpperCase()}
+                                                      </div>
+                                                    </span>
+                                                  </th>
+                                                  <td>
+                                                    <span class="text-white">
+                                                      <div
+                                                        class="font-weight-normal"
+                                                        style={{
+                                                          float: "left",
+                                                        }}
+                                                      >
+                                                        {data.received_amount}
+                                                        &nbsp;
+                                                        {data.symbol.toUpperCase(
+                                                          0
+                                                        )}
+                                                      </div>
+                                                    </span>
+                                                  </td>
+                                                  <td>
+                                                    <span class="text-white">
+                                                      <div
+                                                        class="font-weight-normal"
+                                                        style={{
+                                                          float: "left",
+                                                        }}
+                                                      >
+                                                        {data.transfer_amount}
+                                                        &nbsp;
+                                                        {data.received_token.toUpperCase()}
+                                                      </div>
+                                                    </span>
+                                                  </td>
+                                                  <td>
+                                                    <span class="text_green">
+                                                      <div
+                                                        class="font-weight-normal text_pink"
+                                                        style={{
+                                                          float: "left",
+                                                        }}
+                                                      >
+                                                        {data.time}
+                                                      </div>
+                                                    </span>
+                                                  </td>
+                                                </tr>
+                                              </>
+                                            )
+                                          )}
+                                    </tbody>
                                   </table>
                                 </div>
                               </div>
@@ -519,7 +762,14 @@ class InfoPage extends React.Component {
                                         </th>
                                       </tr>
                                     </thead>
-                                    <tbody></tbody>
+                                    <tbody>
+                                      {" "}
+                                      {this.state.TransSwapping === null
+                                        ? null
+                                        : this.state.TransSwapping.swappingsArray.map(
+                                            (data, key) => console.log(data)
+                                          )}
+                                    </tbody>
                                   </table>
                                 </div>
                               </div>
@@ -568,70 +818,6 @@ class InfoPage extends React.Component {
                           </div>
                         </div>
                         {/* <!--================================TOP TRANSACTIONS TABLES END=============================--> */}
-                      </div>
-                    </div>
-                    {/* //Pools Tab */}
-                    <div
-                      class="tab-pane fade"
-                      id="pills-pools"
-                      role="tabpanel"
-                      aria-labelledby="pills-pools-tab"
-                    >
-                      <h1 style={{ color: "#fff" }}>Pools</h1>
-                    </div>
-                    {/* //Tokens Tab */}
-                    <div
-                      class="tab-pane fade"
-                      id="pills-token"
-                      role="tabpanel"
-                      aria-labelledby="pills-token-tab"
-                    >
-                      <div class="over_token">
-                        <div class="all_token pt-4">
-                          <div class="py-3">
-                            <h4 class="text-white">Top Tokens</h4>
-                          </div>
-                          <div class="top_overview_tables table-responsive p-3">
-                            <table class="table table-hover topTokensTable">
-                              <thead>
-                                <tr>
-                                  <th scope="col">
-                                    <span class="text-white font-weight-normal">
-                                      #{" "}
-                                    </span>
-                                  </th>
-                                  <th scope="col">
-                                    <span class="text-white font-weight-normal">
-                                      NAME{" "}
-                                    </span>
-                                  </th>
-                                  <th scope="col">
-                                    <span class="text-white font-weight-normal">
-                                      PRICE{" "}
-                                    </span>
-                                  </th>
-                                  <th scope="col">
-                                    <span class="text-white font-weight-normal">
-                                      PRICE CHANGE{" "}
-                                    </span>
-                                  </th>
-                                  <th scope="col">
-                                    <span class="text-white font-weight-normal">
-                                      VOLUME 24H{" "}
-                                    </span>
-                                  </th>
-                                  <th scope="col">
-                                    <span class="text-white font-weight-normal">
-                                      LIQUIDITY{" "}
-                                    </span>
-                                  </th>
-                                </tr>
-                              </thead>
-
-                              <tbody></tbody>
-                            </table>
-                          </div>
-                        </div>
                       </div>
                     </div>
                   </div>

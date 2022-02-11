@@ -668,103 +668,115 @@ export async function liquidityAdd() {
                               if (symbol1 == "htz") {
                                 hertzBalance =
                                   balanceWithSymbol.result.split(" ")[0];
+                                hertzBalance = hertzBalance.replace(/\,/g, "");
                               } else {
                                 balanceWithSymbol.tokens.map((Result) => {
                                   if (Result.symbol === symbol1.toUpperCase()) {
                                     hertzBalance = Result.balance;
+                                    hertzBalance = hertzBalance.replace(
+                                      /\,/g,
+                                      ""
+                                    );
                                   }
                                 });
                               }
 
                               if (
-                                parseFloat(secondAmount) <=
+                                parseFloat(firstAmount) <=
                                 parseFloat(hertzBalance)
                               ) {
                                 if (
-                                  parseFloat(firstAmount) <=
+                                  parseFloat(secondAmount) <=
                                   parseFloat(etherBalance)
                                 ) {
-                                  addEther(secondAmount)
-                                    .then((etherResult) => {
-                                      $("#loaderDiv").css("display", "block");
+                                  addLiquidityPair(
+                                    symbol1,
+                                    symbol2,
+                                    addressType1,
+                                    addressType2
+                                  ).then((responseAfterAdded) => {
+                                    addEther(secondAmount)
+                                      .then((etherResult) => {
+                                        $("#loaderDiv").css("display", "block");
 
-                                      addHertz(firstAmount, symbol1)
-                                        .then((hertzResult) => {
-                                          insertHertz(
-                                            pair,
-                                            hertzResult,
-                                            symbol1,
-                                            0,
-                                            hertzResult.transaction_id,
-                                            randomNumber
-                                          )
-                                            .then(
-                                              async (insertResultSecond) => {
+                                        addHertz(firstAmount, symbol1)
+                                          .then((hertzResult) => {
+                                            insertHertz(
+                                              pair,
+                                              hertzResult,
+                                              symbol1,
+                                              0,
+                                              hertzResult.transaction_id,
+                                              randomNumber
+                                            )
+                                              .then(
+                                                async (insertResultSecond) => {
+                                                  $("#loaderDiv").css(
+                                                    "display",
+                                                    "none"
+                                                  );
+                                                  await updateHertzBalance();
+                                                  swal(
+                                                    "Transaction in process",
+                                                    "Please click on clock icon see your transaction status",
+                                                    "success"
+                                                  );
+                                                }
+                                              )
+                                              .catch((err) => {
+                                                reject(err);
                                                 $("#loaderDiv").css(
                                                   "display",
                                                   "none"
                                                 );
-                                                await updateHertzBalance();
                                                 swal(
-                                                  "Transaction in process",
-                                                  "Please click on clock icon see your transaction status",
-                                                  "success"
+                                                  "Transaction Failed",
+                                                  err,
+                                                  "warning"
                                                 );
-                                              }
-                                            )
-                                            .catch((err) => {
-                                              reject(err);
-                                              $("#loaderDiv").css(
-                                                "display",
-                                                "none"
-                                              );
-                                              swal(
-                                                "Transaction Failed",
-                                                err,
-                                                "warning"
-                                              );
-                                            });
+                                              });
 
-                                          insertEther(
-                                            `${symbol2}_${symbol1}`,
-                                            etherResult,
-                                            symbol2,
-                                            1,
-                                            hertzResult.transaction_id,
-                                            randomNumber
-                                          )
-                                            .then((insertResultOne) => {})
-                                            .catch((err) => {
-                                              reject(err);
-                                              $("#loaderDiv").css(
-                                                "display",
-                                                "none"
-                                              );
-                                              swal(
-                                                "Transaction Failed",
-                                                err,
-                                                "warning"
-                                              );
-                                            });
-                                        })
-                                        .catch((err) => {
-                                          reject();
-                                          $("#loaderDiv").css(
-                                            "display",
-                                            "none"
-                                          );
-                                          console.log(
-                                            "Err while transfer hertz Token"
-                                          );
-                                        });
-                                    })
-                                    .catch((err) => {
-                                      reject(err);
-                                      $("#loaderDiv").css("display", "none");
-                                      console.log(
-                                        "Err while transfer ethereum Token"
-                                      );
-                                    });
+                                            insertEther(
+                                              `${symbol2}_${symbol1}`,
+                                              etherResult,
+                                              symbol2,
+                                              1,
+                                              hertzResult.transaction_id,
+                                              randomNumber
+                                            )
+                                              .then((insertResultOne) => {})
+                                              .catch((err) => {
+                                                reject(err);
+                                                $("#loaderDiv").css(
+                                                  "display",
+                                                  "none"
+                                                );
+                                                swal(
+                                                  "Transaction Failed",
+                                                  err,
+                                                  "warning"
+                                                );
+                                              });
+                                          })
+                                          .catch((err) => {
+                                            reject();
+                                            $("#loaderDiv").css(
+                                              "display",
+                                              "none"
+                                            );
+                                            console.log(
+                                              "Err while transfer hertz Token"
+                                            );
+                                          });
+                                      })
+                                      .catch((err) => {
+                                        reject(err);
+                                        $("#loaderDiv").css("display", "none");
+                                        console.log(
+                                          "Err while transfer ethereum Token"
+                                        );
+                                      });
+                                  });
                                 } else {
                                   reject();
                                   swal(

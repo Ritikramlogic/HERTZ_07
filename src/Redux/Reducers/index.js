@@ -1,6 +1,8 @@
 const initialState = {
   NetworkId: null,
   NetworkName: "No Network",
+  poolPair: "bshd_htz",
+  tokenSymbol: "htz",
   account: "",
   username: "",
   token: "",
