@@ -21,7 +21,6 @@ class InforPoolPage extends React.Component {
       volData: await volData(),
       TokenData: await TokenData(),
       TopPools: await TopPools(),
-
       PoolInfo: await PoolInfo(store.getState().poolPair),
     });
   }
@@ -267,7 +266,7 @@ class InforPoolPage extends React.Component {
                                                       null
                                                         ? null
                                                         : this.state.PoolInfo.totalPairLiquidity.toFixed(
-                                                            2
+                                                            4
                                                           )}
                                                     </h4>
                                                   </div>
@@ -283,7 +282,7 @@ class InforPoolPage extends React.Component {
                                                       null
                                                         ? null
                                                         : this.state.PoolInfo.totalRewards.toFixed(
-                                                            2
+                                                            4
                                                           )}
                                                     </h4>
                                                   </div>
@@ -319,7 +318,7 @@ class InforPoolPage extends React.Component {
                                                       null
                                                         ? null
                                                         : this.state.PoolInfo.tokenATotal.toFixed(
-                                                            2
+                                                            4
                                                           )}
                                                     </span>
                                                   </div>
@@ -349,7 +348,7 @@ class InforPoolPage extends React.Component {
                                                       null
                                                         ? null
                                                         : this.state.PoolInfo.tokenBTotal.toFixed(
-                                                            2
+                                                            4
                                                           )}
                                                     </span>
                                                   </div>
@@ -421,7 +420,7 @@ class InforPoolPage extends React.Component {
                                                               null
                                                                 ? null
                                                                 : this.state.PoolInfo.swap24row.toFixed(
-                                                                    2
+                                                                    4
                                                                   )}
                                                             </h4>
                                                           </div>
@@ -444,7 +443,7 @@ class InforPoolPage extends React.Component {
                                                               null
                                                                 ? null
                                                                 : this.state.PoolInfo.totalRewards24.toFixed(
-                                                                    2
+                                                                    4
                                                                   )}
                                                             </h4>
                                                           </div>
@@ -477,7 +476,7 @@ class InforPoolPage extends React.Component {
                                                               .PoolInfo === null
                                                               ? null
                                                               : this.state.PoolInfo.swap7row.toFixed(
-                                                                  2
+                                                                  4
                                                                 )}
                                                           </h4>
                                                         </div>
@@ -498,7 +497,7 @@ class InforPoolPage extends React.Component {
                                                               .PoolInfo === null
                                                               ? null
                                                               : this.state.PoolInfo.totalRewards7.toFixed(
-                                                                  2
+                                                                  4
                                                                 )}
                                                           </h4>
                                                         </div>
@@ -565,7 +564,7 @@ class InforPoolPage extends React.Component {
                                                                 this.state
                                                                   .PoolInfo
                                                                   .pairVol
-                                                              ).toFixed(2)}
+                                                              ).toFixed(4)}
                                                         </h4>
                                                       </div>
                                                       <div class="clock">
@@ -611,7 +610,7 @@ class InforPoolPage extends React.Component {
                                                             .PoolInfo === null
                                                             ? null
                                                             : this.state.PoolInfo.lPairvol.toFixed(
-                                                                2
+                                                                4
                                                               )}
                                                         </h4>
                                                       </div>
@@ -706,6 +705,7 @@ class InforPoolPage extends React.Component {
                                             class="tab-content"
                                             id="pills-tabContent"
                                           >
+                                            {/* //Swap */}
                                             <div
                                               class="tab-pane fade show active"
                                               id="pills-swapsed"
@@ -758,9 +758,11 @@ class InforPoolPage extends React.Component {
                                                               <td>
                                                                 <span class="text-white">
                                                                   <div class="font-weight-normal">
-                                                                    {
+                                                                    {parseFloat(
                                                                       data.received_amount
-                                                                    }{" "}
+                                                                    ).toFixed(
+                                                                      4
+                                                                    )}{" "}
                                                                     {data.symbol.toUpperCase()}
                                                                   </div>
                                                                 </span>
@@ -768,9 +770,11 @@ class InforPoolPage extends React.Component {
                                                               <td>
                                                                 <span class="text-white">
                                                                   <div class="font-weight-normal">
-                                                                    {
+                                                                    {parseFloat(
                                                                       data.transfer_amount
-                                                                    }{" "}
+                                                                    ).toFixed(
+                                                                      4
+                                                                    )}{" "}
                                                                     {data.received_token.toUpperCase()}
                                                                   </div>
                                                                 </span>
@@ -780,6 +784,278 @@ class InforPoolPage extends React.Component {
                                                                   <div class="font-weight-normal text_pink">
                                                                     {data.time}
                                                                   </div>
+                                                                </span>
+                                                              </td>
+                                                            </tr>
+                                                          )
+                                                        )}
+                                                  </tbody>
+                                                </table>
+                                              </div>
+                                            </div>
+                                            {/* Adds */}
+                                            <div
+                                              class="tab-pane fade"
+                                              id="pills-addsed"
+                                              role="tabpanel"
+                                              aria-labelledby="pills-adds-tab"
+                                            >
+                                              <div class=" table-responsive p-3">
+                                                <table class="table table-hover transactionData">
+                                                  <thead>
+                                                    <tr>
+                                                      <th scope="col">
+                                                        <span class="text-white font-weight-normal">
+                                                          Action{" "}
+                                                        </span>
+                                                      </th>
+                                                      <th scope="col">
+                                                        <span class="text-white font-weight-normal">
+                                                          Total Value{" "}
+                                                        </span>
+                                                      </th>
+                                                      <th scope="col">
+                                                        <span class="text-white font-weight-normal">
+                                                          Token Amount{" "}
+                                                        </span>
+                                                      </th>
+                                                      <th scope="col">
+                                                        <span class="text-white font-weight-normal">
+                                                          Token Amount{" "}
+                                                        </span>
+                                                      </th>
+                                                      <th scope="col">
+                                                        <span class="text-white font-weight-normal">
+                                                          Pair{" "}
+                                                        </span>
+                                                      </th>
+                                                    </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                    {this.state.TopPools ===
+                                                    null
+                                                      ? null
+                                                      : this.state.TopPools.SwappairRecords.map(
+                                                          (data, key) => (
+                                                            <tr key={key}>
+                                                              <th scope="row">
+                                                                <span class="text-white font-weight-normal">
+                                                                  <div class="font-weight-normal">
+                                                                    {data.token_A_symbols.toUpperCase()}
+                                                                    /
+                                                                    {data.token_B_symbols.toUpperCase()}
+                                                                  </div>
+                                                                </span>
+                                                              </th>
+                                                              <td>
+                                                                <div
+                                                                  class="text-white d-flex align-items-center "
+                                                                  style={{
+                                                                    justifyContent:
+                                                                      "center",
+                                                                  }}
+                                                                >
+                                                                  <div class="font-weight-normal">
+                                                                    $
+                                                                    {parseFloat(
+                                                                      this.state
+                                                                        .TopPools
+                                                                        .SwappairTotal[
+                                                                        key
+                                                                      ] * 0.001
+                                                                    ).toFixed(
+                                                                      4
+                                                                    )}
+                                                                  </div>
+                                                                </div>
+                                                              </td>
+                                                              <td>
+                                                                <span class="text-white">
+                                                                  <div class="font-weight-normal">
+                                                                    {parseFloat(
+                                                                      this.state
+                                                                        .TopPools
+                                                                        .SwaptokenATotal
+                                                                    ).toFixed(
+                                                                      4
+                                                                    )}
+                                                                    &nbsp;
+                                                                    {data.token_A_symbols.toUpperCase()}
+                                                                  </div>
+                                                                </span>
+                                                              </td>
+                                                              <td>
+                                                                <span class="text-white">
+                                                                  <div class="font-weight-normal">
+                                                                    {parseFloat(
+                                                                      this.state
+                                                                        .TopPools
+                                                                        .SwaptokenBTotal[
+                                                                        key
+                                                                      ]
+                                                                    ).toFixed(
+                                                                      4
+                                                                    )}
+                                                                    &nbsp;
+                                                                    {data.token_B_symbols.toUpperCase()}
+                                                                  </div>
+                                                                </span>
+                                                              </td>
+                                                              <td>
+                                                                <span class="text-white">
+                                                                  <a
+                                                                    // href="https://defi.hertz-network.com/index.php/info/?pair="
+                                                                    class="font-weight-normal d-flex"
+                                                                    style={{
+                                                                      justifyContent:
+                                                                        "center",
+                                                                    }}
+                                                                  >
+                                                                    <span class="">
+                                                                      {data.token_A_symbols.toUpperCase()}
+                                                                      /
+                                                                      {data.token_B_symbols.toUpperCase()}
+                                                                    </span>
+                                                                    <i class="fal fa-external-link-alt"></i>
+                                                                  </a>
+                                                                </span>
+                                                              </td>
+                                                            </tr>
+                                                          )
+                                                        )}
+                                                  </tbody>
+                                                </table>
+                                              </div>
+                                            </div>
+
+                                            {/* Remove */}
+                                            <div
+                                              class="tab-pane fade"
+                                              id="pills-removeed"
+                                              role="tabpanel"
+                                              aria-labelledby="pills-remove-tab"
+                                            >
+                                              <div class=" table-responsive p-3">
+                                                <table class="table table-hover transactionData">
+                                                  <thead>
+                                                    <tr>
+                                                      <th scope="col">
+                                                        <span class="text-white font-weight-normal">
+                                                          Action
+                                                        </span>
+                                                      </th>
+                                                      <th scope="col">
+                                                        <span class="text-white font-weight-normal">
+                                                          Total Value{" "}
+                                                        </span>
+                                                      </th>
+                                                      <th scope="col">
+                                                        <span class="text-white font-weight-normal">
+                                                          Token Amount{" "}
+                                                        </span>
+                                                      </th>
+                                                      <th scope="col">
+                                                        <span class="text-white font-weight-normal">
+                                                          Token Amount{" "}
+                                                        </span>
+                                                      </th>
+                                                      <th scope="col">
+                                                        <span class="text-white font-weight-normal">
+                                                          Pair{" "}
+                                                        </span>
+                                                      </th>
+                                                    </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                    {this.state.TopPools ===
+                                                    null
+                                                      ? null
+                                                      : this.state.TopPools.RemovepairRecords.map(
+                                                          (data, key) => (
+                                                            <tr key={key}>
+                                                              <th scope="row">
+                                                                <span class="text-white font-weight-normal">
+                                                                  <div class="font-weight-normal">
+                                                                    {data.token_A_symbols.toUpperCase()}
+                                                                    /
+                                                                    {data.token_B_symbols.toUpperCase()}
+                                                                  </div>
+                                                                </span>
+                                                              </th>
+                                                              <td>
+                                                                <div
+                                                                  class="text-white d-flex align-items-center "
+                                                                  style={{
+                                                                    justifyContent:
+                                                                      "center",
+                                                                  }}
+                                                                >
+                                                                  <div class="font-weight-normal">
+                                                                    $
+                                                                    {parseFloat(
+                                                                      this.state
+                                                                        .TopPools
+                                                                        .RemovepairTotal[
+                                                                        key
+                                                                      ] * 0.001
+                                                                    ).toFixed(
+                                                                      4
+                                                                    )}
+                                                                  </div>
+                                                                </div>
+                                                              </td>
+                                                              <td>
+                                                                <span class="text-white">
+                                                                  <div class="font-weight-normal">
+                                                                    {parseFloat(
+                                                                      this.state
+                                                                        .TopPools
+                                                                        .RemovetokenATotal[
+                                                                        key
+                                                                      ]
+                                                                    ).toFixed(
+                                                                      4
+                                                                    )}
+                                                                    &nbsp;
+                                                                    {data.token_A_symbols.toUpperCase()}
+                                                                  </div>
+                                                                </span>
+                                                              </td>
+                                                              <td>
+                                                                <span class="text-white">
+                                                                  <div class="font-weight-normal">
+                                                                    {parseFloat(
+                                                                      this.state
+                                                                        .TopPools
+                                                                        .RemovetokenBTotal[
+                                                                        key
+                                                                      ]
+                                                                    ).toFixed(
+                                                                      4
+                                                                    )}
+                                                                    &nbsp;
+                                                                    {data.token_B_symbols.toUpperCase()}
+                                                                  </div>
+                                                                </span>
+                                                              </td>
+                                                              <td>
+                                                                <span class="text-white">
+                                                                  <a
+                                                                    // href="https://defi.hertz-network.com/index.php/info/?pair="
+                                                                    class="font-weight-normal d-flex"
+                                                                    style={{
+                                                                      justifyContent:
+                                                                        "center",
+                                                                    }}
+                                                                  >
+                                                                    <span class="">
+                                                                      {" "}
+                                                                      {data.token_A_symbols.toUpperCase()}
+                                                                      /
+                                                                      {data.token_B_symbols.toUpperCase()}
+                                                                    </span>
+                                                                    <i class="fal fa-external-link-alt"></i>
+                                                                  </a>
                                                                 </span>
                                                               </td>
                                                             </tr>

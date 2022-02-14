@@ -3,9 +3,35 @@ import { volData } from "../Api";
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS } from "chart.js/auto";
 export default function LineChart(props) {
-  // const [CharData, setCharData] = useState([0, 0]);
+  const [CharTimeData, setCharTimeData] = useState([]);
+  const month = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
   // const [ChartTime, setChartTime] = useState([0]);
-  console.log(props.Datase);
+  // const Dataset =
+
+  console.log(props.Dataset);
+  useEffect(() => {
+    props.Dataset.map((data) => {
+      setCharTimeData((TimeData) => [
+        ...TimeData,
+        month[new Date(data[0]).getMonth()] + " " + new Date(data[0]).getDate(),
+      ]);
+    });
+  }, []);
+
   const optionsChart = {
     legend: {
       display: true,
@@ -43,9 +69,8 @@ export default function LineChart(props) {
       intersect: true,
     },
   };
-
   const data = {
-    labels: [1, 2, 3, 5, 7],
+    labels: CharTimeData,
     datasets: [
       {
         label: props.label,

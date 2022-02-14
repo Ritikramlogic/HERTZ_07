@@ -198,15 +198,17 @@ export async function TopPools() {
   return _data;
 }
 
-export async function TransacSwapping() {
+export async function TransactionsSwappings() {
   let _data;
-  fetch("https://ramlogics.com/backend/HERTZ_PHP/TransSwapping.php", {
+  await fetch("https://ramlogics.com/backend/HERTZ_PHP/TransSwapp.php", {
     method: "GET",
   })
     .then((res) => res.json())
     .then((data) => {
       _data = data;
+      console.log(_data);
     });
+
   return _data;
 }
 

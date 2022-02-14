@@ -4,6 +4,7 @@ import { store } from "./Redux/store";
 import Routers from "./Router/route";
 import { useDispatch } from "react-redux";
 import { SetContract } from "./Redux/Actions";
+import { TransactionsSwappings } from "./Api";
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {

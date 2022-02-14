@@ -87,12 +87,15 @@ class InfoTokensPage extends React.Component {
                                           <span>
                                             {console.log(this.state.PoolInfo)}
                                             <img
-                                              // src={
-                                              //   this.state.PoolInfo === null
-                                              //     ? "#"
-                                              //     : this.state.PoolInfo
-                                              //         .tokenAResult
-                                              // }
+                                              src={
+                                                this.state.PoolInfo === null
+                                                  ? "https://ramlogics.com/Defi_Hertz/wp-content/themes/twentytwenty/assets/images/default.png"
+                                                  : this.state.PoolInfo
+                                                      .tokenAResult === null
+                                                  ? "https://ramlogics.com/Defi_Hertz/wp-content/themes/twentytwenty/assets/images/default.png"
+                                                  : this.state.PoolInfo
+                                                      .tokenAResult.image
+                                              }
                                               width="30"
                                               style={{ borderRadius: "50%" }}
                                             ></img>
@@ -150,7 +153,10 @@ class InfoTokensPage extends React.Component {
                                         </div>
                                       </div> */}
                                       <div class="volume_liquidity">
-                                        <div class="row">
+                                        <div
+                                          class="row"
+                                          style={{ justifyContent: "center" }}
+                                        >
                                           <div class="col-md-4 col-12">
                                             <div class="bg_skylight px-3 mb-3 py-4">
                                               <div class="row">
@@ -167,7 +173,7 @@ class InfoTokensPage extends React.Component {
                                                         : parseFloat(
                                                             this.state.PoolInfo
                                                               .totalLiquidity
-                                                          ).toFixed(2)}
+                                                          ).toFixed(4)}
                                                     </h4>
                                                   </div>
                                                 </div>
@@ -180,15 +186,20 @@ class InfoTokensPage extends React.Component {
                                                   <div class="d-flex align-items-center justify-content-between py-2 mt-2">
                                                     <span class="font-weight-normal text-white">
                                                       <img
-                                                        // src={
-                                                        //   this.state.PoolInfo
-                                                        //     .tokenAResult ==
-                                                        //   null
-                                                        //     ? "https://ramlogics.com/Defi_Hertz/wp-content/themes/twentytwenty/assets/images/default.png"
-                                                        //     : this.state
-                                                        //         .PoolInfo
-                                                        //         .tokenAResult
-                                                        // }
+                                                        src={
+                                                          this.state
+                                                            .PoolInfo === null
+                                                            ? "https://ramlogics.com/Defi_Hertz/wp-content/themes/twentytwenty/assets/images/default.png"
+                                                            : this.state
+                                                                .PoolInfo
+                                                                .tokenAResult ===
+                                                              null
+                                                            ? "https://ramlogics.com/Defi_Hertz/wp-content/themes/twentytwenty/assets/images/default.png"
+                                                            : this.state
+                                                                .PoolInfo
+                                                                .tokenAResult
+                                                                .image
+                                                        }
                                                         width="24"
                                                       ></img>{" "}
                                                       &nbsp;
@@ -208,7 +219,7 @@ class InfoTokensPage extends React.Component {
                                                         : parseFloat(
                                                             this.state.PoolInfo
                                                               .tokenTotal
-                                                          ).toFixed(2)}
+                                                          ).toFixed(4)}
                                                     </span>
                                                   </div>
                                                 </div>
@@ -282,7 +293,7 @@ class InfoTokensPage extends React.Component {
                                                                     this.state
                                                                       .PoolInfo
                                                                       .swap24row
-                                                                  ).toFixed(2)}
+                                                                  ).toFixed(4)}
                                                             </h4>
                                                           </div>
                                                         </div>
@@ -307,7 +318,7 @@ class InfoTokensPage extends React.Component {
                                                                     this.state
                                                                       .PoolInfo
                                                                       .totalRewards24
-                                                                  ).toFixed(2)}
+                                                                  ).toFixed(4)}
                                                             </h4>
                                                           </div>
                                                         </div>
@@ -342,7 +353,7 @@ class InfoTokensPage extends React.Component {
                                                                   this.state
                                                                     .PoolInfo
                                                                     .swap7row
-                                                                ).toFixed(2)}
+                                                                ).toFixed(4)}
                                                           </h4>
                                                         </div>
                                                       </div>
@@ -365,7 +376,7 @@ class InfoTokensPage extends React.Component {
                                                                   this.state
                                                                     .PoolInfo
                                                                     .totalRewards7
-                                                                ).toFixed(2)}
+                                                                ).toFixed(4)}
                                                           </h4>
                                                         </div>
                                                       </div>
@@ -431,7 +442,7 @@ class InfoTokensPage extends React.Component {
                                                                 this.state
                                                                   .PoolInfo
                                                                   .pairVol
-                                                              ).toFixed(2)}
+                                                              ).toFixed(4)}
                                                         </h4>
                                                       </div>
                                                       <div class="clock">
@@ -479,7 +490,7 @@ class InfoTokensPage extends React.Component {
                                                                 this.state
                                                                   .PoolInfo
                                                                   .lPairvol
-                                                              ).toFixed(2)}
+                                                              ).toFixed(4)}
                                                         </h4>
                                                       </div>
                                                       <div class="clock">
@@ -520,7 +531,7 @@ class InfoTokensPage extends React.Component {
                                             Transaction
                                           </h4>
                                         </div>
-                                        <div class="transaction_tabs_pools">
+                                        {/* <div class="transaction_tabs_pools">
                                           <ul
                                             class="nav nav-pills mb-3"
                                             id="pills-tab"
@@ -566,7 +577,7 @@ class InfoTokensPage extends React.Component {
                                               </a>
                                             </li>
                                           </ul>
-                                        </div>
+                                        </div> */}
                                         <div class="top_overview_tables">
                                           <div
                                             class="tab-content"
@@ -637,7 +648,7 @@ class InfoTokensPage extends React.Component {
                                                                     {parseFloat(
                                                                       data.transfer_amount
                                                                     ).toFixed(
-                                                                      2
+                                                                      4
                                                                     )}{" "}
                                                                     {data.received_token.toUpperCase()}
                                                                   </div>
