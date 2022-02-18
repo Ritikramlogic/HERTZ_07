@@ -379,12 +379,14 @@ export const TransferHertzToUser =
         type: "LOCAL_ACCOUNT",
         payload: {
           htZbalance: Acountdata.balance,
+          tokens: Acountdata.tokens,
         },
       });
       if (localStorage.getItem("hertzAccount")) {
         let JSONdata = JSON.parse(localStorage.getItem("hertzAccount"));
         // update next Time
         JSONdata.htZbalance = Acountdata.balance;
+        JSONdata.tokens = Acountdata.tokens;
         localStorage.setItem("hertzAccount", JSON.stringify(JSONdata));
       }
 

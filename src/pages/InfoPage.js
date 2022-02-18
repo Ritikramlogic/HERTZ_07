@@ -1,6 +1,7 @@
 import React from "react";
 import { volData, TokenData, TransacSwapping, TopPools } from "../Api";
 import $ from "jquery";
+import Pagination from "../Components/Pagination";
 import LineChart from "../Components/Chart";
 import { Link } from "react-router-dom";
 import { store } from "../Redux/store";
@@ -14,7 +15,11 @@ class InfoPage extends React.Component {
       TopPools: null,
       TranscationSwapping: null,
       PoolInfo: null,
+      currentSwap: [],
+      currentPage: null,
+      totalPages: null,
     };
+    this.onPageChanged = this.onPageChanged.bind(this);
   }
   async componentDidMount() {
     this.setState({
@@ -23,7 +28,16 @@ class InfoPage extends React.Component {
       TopPools: await TopPools(),
     });
   }
-
+  onPageChanged(data) {
+    console.log(data);
+    const { currentPage, totalPages, pageLimit } = data;
+    const offset = (currentPage - 1) * pageLimit;
+    const currentSwap = this.state.TopPools.swappingsArray.slice(
+      offset,
+      offset + pageLimit
+    );
+    this.setState({ currentPage, currentSwap, totalPages });
+  }
   // render() {
   //   return (
   //     <>
@@ -356,7 +370,7 @@ class InfoPage extends React.Component {
                                                             data.max + data.min
                                                           )) *
                                                         100
-                                                      ).toPrecision(4)}
+                                                      ).toFixed(4)}
                                                     </div>
                                                   </span>
                                                 ) : (
@@ -371,7 +385,7 @@ class InfoPage extends React.Component {
                                                             data.max + data.min
                                                           )) *
                                                         100
-                                                      ).toPrecision(4)}
+                                                      ).toFixed(4)}
                                                     </div>
                                                   </span>
                                                 )}
@@ -463,6 +477,10 @@ class InfoPage extends React.Component {
                                                 </th>
                                                 <td>
                                                   <div class="text-white d-flex align-items-center ">
+                                                    {console.log(
+                                                      this.state.TopPools
+                                                        .rowArray[key].pair
+                                                    )}
                                                     <Link
                                                       to="/poolinfo"
                                                       onClick={() =>
@@ -512,11 +530,11 @@ class InfoPage extends React.Component {
                                                 <td>
                                                   <span class="text-white">
                                                     <div class="font-weight-normal">
-                                                      {(
+                                                      {parseFloat(
                                                         this.state.TopPools
                                                           .swaprow7days[key] *
-                                                        0.001
-                                                      ).toPrecision(4)}
+                                                          0.001
+                                                      ).toFixed(4)}
                                                     </div>
                                                   </span>
                                                 </td>
@@ -524,11 +542,11 @@ class InfoPage extends React.Component {
                                                   <span class="text-white">
                                                     <div class="font-weight-normal">
                                                       ${" "}
-                                                      {(
+                                                      {parseFloat(
                                                         this.state.TopPools
                                                           .totalRewards[key] *
-                                                        0.001
-                                                      ).toPrecision(4)}
+                                                          0.001
+                                                      ).toFixed(4)}
                                                     </div>
                                                   </span>
                                                 </td>
@@ -536,11 +554,11 @@ class InfoPage extends React.Component {
                                                   <span class="text-white">
                                                     <div class="font-weight-normal">
                                                       $
-                                                      {(
+                                                      {parseFloat(
                                                         this.state.TopPools
                                                           .totalLiquidity[key] *
-                                                        0.001
-                                                      ).toPrecision(4)}
+                                                          0.001
+                                                      ).toFixed(4)}
                                                     </div>
                                                   </span>
                                                 </td>
@@ -618,6 +636,27 @@ class InfoPage extends React.Component {
                                 role="tabpanel"
                                 aria-labelledby="pills-swaps-tab"
                               >
+                                <div>
+                                  {this.state.TopPools === null ? null : (
+                                    <div
+                                      style={{
+                                        padding: "10px",
+                                        display: "flex",
+                                        justifyContent: "flex-end",
+                                      }}
+                                    >
+                                      <Pagination
+                                        totalRecords={
+                                          this.state.TopPools.swappingsArray
+                                            .length
+                                        }
+                                        pageLimit={10}
+                                        pageNeighbours={1}
+                                        onPageChanged={this.onPageChanged}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
                                 <div class=" table-responsive">
                                   <table class="table table-hover transactionData">
                                     <thead>
@@ -647,7 +686,7 @@ class InfoPage extends React.Component {
                                     <tbody>
                                       {this.state.TopPools === null
                                         ? null
-                                        : this.state.TopPools.swappingsArray.map(
+                                        : this.state.currentSwap.map(
                                             (data, key) => (
                                               <tr key={key}>
                                                 <th scope="row">

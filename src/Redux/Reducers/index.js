@@ -301,6 +301,7 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         htZbalance: action.payload.htZbalance,
+        tokens: action.payload.tokens,
       };
     default:
       return state;

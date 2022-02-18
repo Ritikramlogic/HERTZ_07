@@ -1,9 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { volData, TokenData, TopPools, PoolInfo } from "../Api";
-
+import Pagination from "../Components/Pagination";
 import LineChart from "../Components/Chart";
 import { store } from "../Redux/store";
+import { cssNumber } from "jquery";
 class InforPoolPage extends React.Component {
   constructor(props) {
     super(props);
@@ -12,8 +13,12 @@ class InforPoolPage extends React.Component {
       TokenData: null,
       TopPools: null,
       PoolInfo: null,
+      currentSwap: [],
+      currentPage: null,
+      totalPages: null,
       //   poolPair: "bshd_htz",
     };
+    this.onPageChanged = this.onPageChanged.bind(this);
   }
 
   async componentDidMount() {
@@ -23,6 +28,16 @@ class InforPoolPage extends React.Component {
       TopPools: await TopPools(),
       PoolInfo: await PoolInfo(store.getState().poolPair),
     });
+  }
+  onPageChanged(data) {
+    console.log(data);
+    const { currentPage, totalPages, pageLimit } = data;
+    const offset = (currentPage - 1) * pageLimit;
+    const currentSwap = this.state.TopPools.swappings.slice(
+      offset,
+      offset + pageLimit
+    );
+    this.setState({ currentPage, currentSwap, totalPages });
   }
   render() {
     return (
@@ -712,6 +727,31 @@ class InforPoolPage extends React.Component {
                                               role="tabpanel"
                                               aria-labelledby="pills-swaps-tab"
                                             >
+                                              {/* <div>
+                                                {this.state.TopPools ===
+                                                null ? null : (
+                                                  <div
+                                                    style={{
+                                                      padding: "10px",
+                                                      display: "flex",
+                                                      justifyContent:
+                                                        "flex-end",
+                                                    }}
+                                                  >
+                                                    <Pagination
+                                                      totalRecords={
+                                                        this.state.TopPools
+                                                          .swappings.length
+                                                      }
+                                                      pageLimit={10}
+                                                      pageNeighbours={1}
+                                                      onPageChanged={
+                                                        this.onPageChanged
+                                                      }
+                                                    />
+                                                  </div>
+                                                )}
+                                              </div> */}
                                               <div class=" table-responsive p-3">
                                                 <table class="table table-hover transactionData">
                                                   <thead>
@@ -744,49 +784,91 @@ class InforPoolPage extends React.Component {
                                                       ? null
                                                       : this.state.TopPools.swappings.map(
                                                           (data, key) => (
-                                                            <tr key={key}>
-                                                              <th scope="row">
-                                                                <span class="text-white font-weight-normal">
-                                                                  <div class="font-weight-normal">
-                                                                    Swap{" "}
-                                                                    {data.symbol.toUpperCase()}{" "}
-                                                                    for{" "}
-                                                                    {data.received_token.toUpperCase()}
-                                                                  </div>
-                                                                </span>
-                                                              </th>
-                                                              <td>
-                                                                <span class="text-white">
-                                                                  <div class="font-weight-normal">
-                                                                    {parseFloat(
-                                                                      data.received_amount
-                                                                    ).toFixed(
-                                                                      4
-                                                                    )}{" "}
-                                                                    {data.symbol.toUpperCase()}
-                                                                  </div>
-                                                                </span>
-                                                              </td>
-                                                              <td>
-                                                                <span class="text-white">
-                                                                  <div class="font-weight-normal">
-                                                                    {parseFloat(
-                                                                      data.transfer_amount
-                                                                    ).toFixed(
-                                                                      4
-                                                                    )}{" "}
-                                                                    {data.received_token.toUpperCase()}
-                                                                  </div>
-                                                                </span>
-                                                              </td>
-                                                              <td>
-                                                                <span class="text_green">
-                                                                  <div class="font-weight-normal text_pink">
-                                                                    {data.time}
-                                                                  </div>
-                                                                </span>
-                                                              </td>
-                                                            </tr>
+                                                            <>
+                                                              {console.log(
+                                                                data
+                                                              )}
+                                                              {console.log(
+                                                                this.state
+                                                                  .PoolInfo
+                                                                  .token[0] +
+                                                                  "_" +
+                                                                  this.state
+                                                                    .PoolInfo
+                                                                    .token[1] ===
+                                                                  data.pair ||
+                                                                  this.state
+                                                                    .PoolInfo
+                                                                    .token[1] +
+                                                                    "_" +
+                                                                    this.state
+                                                                      .PoolInfo
+                                                                      .token[0] ===
+                                                                    data.pair
+                                                              )}
+                                                              {this.state
+                                                                .PoolInfo
+                                                                .token[0] +
+                                                                "_" +
+                                                                this.state
+                                                                  .PoolInfo
+                                                                  .token[1] ===
+                                                                data.pair ||
+                                                              this.state
+                                                                .PoolInfo
+                                                                .token[1] +
+                                                                "_" +
+                                                                this.state
+                                                                  .PoolInfo
+                                                                  .token[0] ===
+                                                                data.pair ? (
+                                                                <tr key={key}>
+                                                                  <th scope="row">
+                                                                    <span class="text-white font-weight-normal">
+                                                                      <div class="font-weight-normal">
+                                                                        Swap{" "}
+                                                                        {data.symbol.toUpperCase()}{" "}
+                                                                        for{" "}
+                                                                        {data.received_token.toUpperCase()}
+                                                                      </div>
+                                                                    </span>
+                                                                  </th>
+                                                                  <td>
+                                                                    <span class="text-white">
+                                                                      <div class="font-weight-normal">
+                                                                        {parseFloat(
+                                                                          data.received_amount
+                                                                        ).toFixed(
+                                                                          4
+                                                                        )}{" "}
+                                                                        {data.symbol.toUpperCase()}
+                                                                      </div>
+                                                                    </span>
+                                                                  </td>
+                                                                  <td>
+                                                                    <span class="text-white">
+                                                                      <div class="font-weight-normal">
+                                                                        {parseFloat(
+                                                                          data.transfer_amount
+                                                                        ).toFixed(
+                                                                          4
+                                                                        )}{" "}
+                                                                        {data.received_token.toUpperCase()}
+                                                                      </div>
+                                                                    </span>
+                                                                  </td>
+                                                                  <td>
+                                                                    <span class="text_green">
+                                                                      <div class="font-weight-normal text_pink">
+                                                                        {
+                                                                          data.time
+                                                                        }
+                                                                      </div>
+                                                                    </span>
+                                                                  </td>
+                                                                </tr>
+                                                              ) : null}
+                                                            </>
                                                           )
                                                         )}
                                                   </tbody>
@@ -1007,14 +1089,17 @@ class InforPoolPage extends React.Component {
                                                               <td>
                                                                 <span class="text-white">
                                                                   <div class="font-weight-normal">
-                                                                    {parseFloat(
-                                                                      this.state
-                                                                        .TopPools
-                                                                        .RemovetokenATotal[
-                                                                        key
-                                                                      ]
-                                                                    ).toFixed(
-                                                                      4
+                                                                    {Math.abs(
+                                                                      parseFloat(
+                                                                        this
+                                                                          .state
+                                                                          .TopPools
+                                                                          .RemovetokenATotal[
+                                                                          key
+                                                                        ]
+                                                                      ).toFixed(
+                                                                        4
+                                                                      )
                                                                     )}
                                                                     &nbsp;
                                                                     {data.token_A_symbols.toUpperCase()}
@@ -1024,14 +1109,17 @@ class InforPoolPage extends React.Component {
                                                               <td>
                                                                 <span class="text-white">
                                                                   <div class="font-weight-normal">
-                                                                    {parseFloat(
-                                                                      this.state
-                                                                        .TopPools
-                                                                        .RemovetokenBTotal[
-                                                                        key
-                                                                      ]
-                                                                    ).toFixed(
-                                                                      4
+                                                                    {Math.abs(
+                                                                      parseFloat(
+                                                                        this
+                                                                          .state
+                                                                          .TopPools
+                                                                          .RemovetokenBTotal[
+                                                                          key
+                                                                        ]
+                                                                      ).toFixed(
+                                                                        4
+                                                                      )
                                                                     )}
                                                                     &nbsp;
                                                                     {data.token_B_symbols.toUpperCase()}

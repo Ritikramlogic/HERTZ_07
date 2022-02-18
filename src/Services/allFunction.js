@@ -1860,18 +1860,28 @@ export async function getLiquidityPoolDetails(pair) {
 
 export async function updateHertzBalance() {
   //for update Hertz balance
-  let AccountDetails = await getAccount();
-  console.log(AccountDetails.balance);
-  store.dispatch({
-    type: "HTZ_BALANCE_UPDATE",
-    payload: {
-      htZbalance: AccountDetails.balance,
-    },
-  });
-  if (localStorage.getItem("hertzAccount")) {
-    let JSONdata = JSON.parse(localStorage.getItem("hertzAccount"));
-    // update next Time
-    JSONdata.htZbalance = AccountDetails.balance;
-    localStorage.setItem("hertzAccount", JSON.stringify(JSONdata));
+
+  try {
+    let AccountDetails = await getAccount();
+    console.log(AccountDetails);
+    store.dispatch({
+      type: "HTZ_BALANCE_UPDATE",
+      payload: {
+        htZbalance: AccountDetails.balance,
+        tokens: AccountDetails.tokens,
+      },
+    });
+    console.log(AccountDetails.tokens);
+    if (localStorage.getItem("hertzAccount")) {
+      let JSONdata = JSON.parse(localStorage.getItem("hertzAccount"));
+      // update next Time
+      JSONdata.htZbalance = AccountDetails.balance;
+      JSONdata.tokens = AccountDetails.tokens;
+      localStorage.setItem("hertzAccount", JSON.stringify(JSONdata));
+    }
+  } catch (error) {
+    console.log("====================================");
+    console.log(error);
+    console.log("====================================");
   }
 }

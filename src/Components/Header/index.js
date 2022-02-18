@@ -14,7 +14,10 @@ import {
   is2FAvisableChanged,
   DisconnectAccount,
 } from "../../Redux/Actions";
-import { connectWalletConnect } from "../../Services/allFunction";
+import {
+  connectWalletConnect,
+  updateHertzBalance,
+} from "../../Services/allFunction";
 import { store } from "../../Redux/store";
 
 function mapStateToProps(state) {
@@ -48,6 +51,12 @@ class Header extends Component {
     this.Login = this.Login.bind(this);
     this.is2FAvisableChanged = this.is2FAvisableChanged.bind(this);
     this.CodeChange = this.CodeChange.bind(this);
+  }
+
+  componentDidMount() {
+    document
+      .getElementById("dropdownMenuButton")
+      .addEventListener("click", async () => await updateHertzBalance());
   }
 
   //Two factor Aucthetication Code
@@ -632,7 +641,7 @@ function ConnectModal(props) {
   return (
     <>
       <div
-        class="modal fade modal_pd"
+        class="modal fade modal_pd "
         id="ConnectModal"
         tabindex="-1"
         role="dialog"
