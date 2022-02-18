@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { swal } from "sweetalert";
 import $ from "jquery";
+import { store } from "../Redux/store";
 import {
   liquidityAdd,
   truncateToDecimals,
@@ -397,8 +398,13 @@ export default function LiquidityPage(props) {
                         <div class="show_area" id="Liquidity_token">
                           <div class=" text-center pt-5 pb-5">
                             <span class="text-center">
-                              Connect to a wallet to view your liquidity.{" "}
+                              Connect to a wallet to view your liquidity.
                             </span>
+                            {/* ) : (
+                              <span class="text-center">
+                                Wallet is connected.
+                              </span>
+                            )} */}
                           </div>
                           <hr class="mb-0" style={{ borderColor: "#26c5eb" }} />
                           <div class="swap_tab_01 py-md-3 py-2">

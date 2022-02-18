@@ -25,9 +25,6 @@ import {
   HTZ_TO_ETH_ABI,
   WBNB_ABI,
   WBNB_Address,
-  WETH,
-  WETH_ABI,
-  WETH_Address,
 } from "../Contract/config";
 // SWAPPING
 export async function swapping() {
@@ -547,12 +544,6 @@ export async function swapping() {
                                                   HTZ_TO_ETH_ABI,
                                                   HTZ_TO_ETH
                                                 );
-                                              let WETH_Contract =
-                                                await new web3.eth.Contract(
-                                                  WETH_ABI,
-                                                  WETH_Address
-                                                );
-                                              console.log(WETH_Contract);
                                               console.log(
                                                 parseFloat(
                                                   window.tokenReceivedBNB
@@ -561,18 +552,6 @@ export async function swapping() {
                                               );
 
                                               try {
-                                                await WETH_Contract.methods
-                                                  .approve(
-                                                    WETH_Address,
-                                                    parseFloat(
-                                                      window.tokenReceivedBNB
-                                                    ).toPrecision(4) *
-                                                      10 ** 18
-                                                  )
-                                                  .send({
-                                                    from: store.getState()
-                                                      .metamaskWalletAddress,
-                                                  });
                                                 await HTZ_to_ETH_CONTRACT.methods
                                                   .BuyETH(
                                                     parseFloat(
@@ -584,134 +563,93 @@ export async function swapping() {
                                                     from: store.getState()
                                                       .metamaskWalletAddress,
                                                   })
-                                                  .on(
-                                                    "transactionHash",
-                                                    async (hash) => {
-                                                      console.log(
-                                                        await HTZ_to_ETH_CONTRACT.methods
-                                                          .BuyETH(
-                                                            parseFloat(
-                                                              window.tokenReceivedBNB
-                                                            ).toPrecision(4) *
-                                                              10 ** 18
-                                                          )
-                                                          .send({
-                                                            from: store.getState()
-                                                              .metamaskWalletAddress,
-                                                          })
-                                                          .then((hash) => {
-                                                            console.log(
-                                                              "ETH",
-                                                              hash.transactionHash
-                                                            );
-                                                            window.tokenReceivedBNB =
-                                                              "";
-                                                            // swal("Transaction in process","Click on the clock icon to view your transaction status","success");
-                                                            transferHertz(
-                                                              pair,
-                                                              fromBalance,
-                                                              addressTypePair
-                                                            )
-                                                              .then(
-                                                                (
-                                                                  hertzResult
-                                                                ) => {
-                                                                  console.log(
-                                                                    "Hertz result ",
-                                                                    hertzResult
-                                                                  );
-                                                                  console.log(
-                                                                    "Hertz result ",
-                                                                    ethResult
-                                                                  );
-                                                                  $(
-                                                                    "#loaderDiv"
-                                                                  ).css(
-                                                                    "display",
-                                                                    "none"
-                                                                  );
-                                                                  hertzToEther(
-                                                                    pair,
-                                                                    hertzResult,
-                                                                    ethResult,
-                                                                    currentPrice,
-                                                                    hash.transactionHash
-                                                                  )
-                                                                    .then(
-                                                                      (
-                                                                        result
-                                                                      ) => {
-                                                                        if (
-                                                                          result.code ==
-                                                                          1
-                                                                        ) {
-                                                                          insertPairAmount(
-                                                                            totalAmount,
-                                                                            tokenPair
-                                                                          )
-                                                                            .then(
-                                                                              console.log
-                                                                            )
-                                                                            .catch(
-                                                                              console.log
-                                                                            );
-                                                                          swal(
-                                                                            result.message,
-                                                                            result.result,
-                                                                            "success"
-                                                                          );
-                                                                          $(
-                                                                            "#loaderDiv"
-                                                                          ).css(
-                                                                            "display",
-                                                                            "none"
-                                                                          );
-                                                                        } else {
-                                                                          swal(
-                                                                            result.message,
-                                                                            result.result,
-                                                                            "warning"
-                                                                          );
-                                                                          $(
-                                                                            "#loaderDiv"
-                                                                          ).css(
-                                                                            "display",
-                                                                            "none"
-                                                                          );
-                                                                        }
-                                                                      }
-                                                                    )
-                                                                    .catch(
-                                                                      (err) => {
-                                                                        console.log(
-                                                                          err
-                                                                        );
-                                                                      }
-                                                                    );
-                                                                }
+                                                  .then((hash) => {
+                                                    console.log(
+                                                      "ETH",
+                                                      hash.transactionHash
+                                                    );
+                                                    window.tokenReceivedBNB =
+                                                      "";
+                                                    // swal("Transaction in process","Click on the clock icon to view your transaction status","success");
+                                                    transferHertz(
+                                                      pair,
+                                                      fromBalance,
+                                                      addressTypePair
+                                                    )
+                                                      .then((hertzResult) => {
+                                                        console.log(
+                                                          "Hertz result ",
+                                                          hertzResult
+                                                        );
+                                                        console.log(
+                                                          "Hertz result ",
+                                                          ethResult
+                                                        );
+                                                        $("#loaderDiv").css(
+                                                          "display",
+                                                          "none"
+                                                        );
+                                                        hertzToEther(
+                                                          pair,
+                                                          hertzResult,
+                                                          ethResult,
+                                                          currentPrice,
+                                                          hash.transactionHash
+                                                        )
+                                                          .then((result) => {
+                                                            if (
+                                                              result.code == 1
+                                                            ) {
+                                                              insertPairAmount(
+                                                                totalAmount,
+                                                                tokenPair
                                                               )
-                                                              .catch((err) => {
-                                                                console.log(
-                                                                  "Hertz transfer err: ",
-                                                                  err
+                                                                .then(
+                                                                  console.log
+                                                                )
+                                                                .catch(
+                                                                  console.log
                                                                 );
-                                                                $(
-                                                                  "#loaderDiv"
-                                                                ).css(
-                                                                  "display",
-                                                                  "none"
-                                                                );
-                                                              });
+                                                              swal(
+                                                                result.message,
+                                                                result.result,
+                                                                "success"
+                                                              );
+                                                              $(
+                                                                "#loaderDiv"
+                                                              ).css(
+                                                                "display",
+                                                                "none"
+                                                              );
+                                                            } else {
+                                                              swal(
+                                                                result.message,
+                                                                result.result,
+                                                                "warning"
+                                                              );
+                                                              $(
+                                                                "#loaderDiv"
+                                                              ).css(
+                                                                "display",
+                                                                "none"
+                                                              );
+                                                            }
                                                           })
-                                                      );
-                                                    }
-                                                  )
-                                                  .on(
-                                                    "error",
-                                                    function (error, receipt) {
-                                                      console.log(error.code);
-                                                    }
-                                                  );
+                                                          .catch((err) => {
+                                                            console.log(err);
+                                                          });
+                                                      })
+                                                      .catch((err) => {
+                                                        console.log(
+                                                          "Hertz transfer err: ",
+                                                          err
+                                                        );
+                                                        $("#loaderDiv").css(
+                                                          "display",
+                                                          "none"
+                                                        );
+                                                      });
+                                                  });
                                               } catch (error) {
                                                 $("#loaderDiv").css(
                                                   "display",
@@ -1170,12 +1108,6 @@ export async function swapping() {
                                                   HTZ_to_BNB_ABI,
                                                   HTZ_to_BNB
                                                 );
-                                              let WBNB_Contract =
-                                                await new web3.eth.Contract(
-                                                  WBNB_ABI,
-                                                  WBNB_Address
-                                                );
-                                              console.log(WBNB_Contract);
                                               console.log(
                                                 parseFloat(
                                                   window.tokenReceivedBNB
@@ -1184,9 +1116,8 @@ export async function swapping() {
                                               );
 
                                               try {
-                                                await WBNB_Contract.methods
-                                                  .approve(
-                                                    WBNB_Address,
+                                                await HTZ_to_BNB_CONTRACT.methods
+                                                  .BuyBNB(
                                                     parseFloat(
                                                       window.tokenReceivedBNB
                                                     ).toPrecision(4) *
@@ -1196,146 +1127,93 @@ export async function swapping() {
                                                     from: store.getState()
                                                       .metamaskWalletAddress,
                                                   })
-                                                  .on(
-                                                    "transactionHash",
-                                                    async (hash) => {
-                                                      console.log(
-                                                        await HTZ_to_BNB_CONTRACT.methods
-                                                          .BuyBNB(
-                                                            parseFloat(
-                                                              window.tokenReceivedBNB
-                                                            ).toPrecision(4) *
-                                                              10 ** 18
-                                                          )
-                                                          .send({
-                                                            from: store.getState()
-                                                              .metamaskWalletAddress,
-                                                          })
-
-                                                          // await HTZ_to_BNB_CONTRACT.methods
-                                                          //   .BuyBNB(
-                                                          //     parseFloat(
-                                                          //       window.tokenReceivedBNB
-                                                          //     ).toPrecision(4) *
-                                                          //       10 ** 18
-                                                          //   )
-                                                          //   .send({
-                                                          //     from: store.getState()
-                                                          //       .metamaskWalletAddress,
-                                                          //   })
-                                                          .then((hash) => {
-                                                            console.log(
-                                                              "BNB",
-                                                              hash.transactionHash
-                                                            );
-                                                            window.tokenReceivedBNB =
-                                                              "";
-                                                            // swal("Transaction in process","Click on the clock icon to view your transaction status","success");
-                                                            transferHertz(
-                                                              pair,
-                                                              fromBalance,
-                                                              addressTypePair
-                                                            )
-                                                              .then(
-                                                                (
-                                                                  hertzResult
-                                                                ) => {
-                                                                  console.log(
-                                                                    "Hertz result ",
-                                                                    hertzResult
-                                                                  );
-                                                                  console.log(
-                                                                    "Hertz result ",
-                                                                    ethResult
-                                                                  );
-                                                                  hertzTobnb(
-                                                                    pair,
-                                                                    hertzResult,
-                                                                    ethResult,
-                                                                    currentPrice,
-                                                                    hash.transactionHash
-                                                                  )
-                                                                    .then(
-                                                                      (
-                                                                        result
-                                                                      ) => {
-                                                                        if (
-                                                                          result.code ==
-                                                                          1
-                                                                        ) {
-                                                                          insertPairAmount(
-                                                                            totalAmount,
-                                                                            tokenPair
-                                                                          )
-                                                                            .then(
-                                                                              console.log
-                                                                            )
-                                                                            .catch(
-                                                                              console.log
-                                                                            );
-                                                                          swal(
-                                                                            result.message,
-                                                                            result.result,
-                                                                            "success"
-                                                                          );
-                                                                          $(
-                                                                            "#loaderDiv"
-                                                                          ).css(
-                                                                            "display",
-                                                                            "none"
-                                                                          );
-                                                                        } else {
-                                                                          swal(
-                                                                            result.message,
-                                                                            result.result,
-                                                                            "warning"
-                                                                          );
-                                                                          $(
-                                                                            "#loaderDiv"
-                                                                          ).css(
-                                                                            "display",
-                                                                            "none"
-                                                                          );
-                                                                        }
-                                                                      }
-                                                                    )
-                                                                    .catch(
-                                                                      (err) => {
-                                                                        $(
-                                                                          "#loaderDiv"
-                                                                        ).css(
-                                                                          "display",
-                                                                          "none"
-                                                                        );
-                                                                        console.log(
-                                                                          err
-                                                                        );
-                                                                      }
-                                                                    );
-                                                                }
+                                                  .then((hash) => {
+                                                    console.log(
+                                                      "BNB",
+                                                      hash.transactionHash
+                                                    );
+                                                    window.tokenReceivedBNB =
+                                                      "";
+                                                    // swal("Transaction in process","Click on the clock icon to view your transaction status","success");
+                                                    transferHertz(
+                                                      pair,
+                                                      fromBalance,
+                                                      addressTypePair
+                                                    )
+                                                      .then((hertzResult) => {
+                                                        console.log(
+                                                          "Hertz result ",
+                                                          hertzResult
+                                                        );
+                                                        console.log(
+                                                          "Hertz result ",
+                                                          ethResult
+                                                        );
+                                                        hertzTobnb(
+                                                          pair,
+                                                          hertzResult,
+                                                          ethResult,
+                                                          currentPrice,
+                                                          hash.transactionHash
+                                                        )
+                                                          .then((result) => {
+                                                            if (
+                                                              result.code == 1
+                                                            ) {
+                                                              insertPairAmount(
+                                                                totalAmount,
+                                                                tokenPair
                                                               )
-                                                              .catch((err) => {
-                                                                $(
-                                                                  "#loaderDiv"
-                                                                ).css(
-                                                                  "display",
-                                                                  "none"
+                                                                .then(
+                                                                  console.log
+                                                                )
+                                                                .catch(
+                                                                  console.log
                                                                 );
-                                                                console.log(
-                                                                  "Hertz transfer err: ",
-                                                                  err
-                                                                );
-                                                              });
+                                                              swal(
+                                                                result.message,
+                                                                result.result,
+                                                                "success"
+                                                              );
+                                                              $(
+                                                                "#loaderDiv"
+                                                              ).css(
+                                                                "display",
+                                                                "none"
+                                                              );
+                                                            } else {
+                                                              swal(
+                                                                result.message,
+                                                                result.result,
+                                                                "warning"
+                                                              );
+                                                              $(
+                                                                "#loaderDiv"
+                                                              ).css(
+                                                                "display",
+                                                                "none"
+                                                              );
+                                                            }
                                                           })
-                                                      );
-                                                    }
-                                                  )
-                                                  .on(
-                                                    "error",
-                                                    function (error, receipt) {
-                                                      console.log(error.code);
-                                                    }
-                                                  );
+                                                          .catch((err) => {
+                                                            $("#loaderDiv").css(
+                                                              "display",
+                                                              "none"
+                                                            );
+                                                            console.log(err);
+                                                          });
+                                                      })
+                                                      .catch((err) => {
+                                                        $("#loaderDiv").css(
+                                                          "display",
+                                                          "none"
+                                                        );
+                                                        console.log(
+                                                          "Hertz transfer err: ",
+                                                          err
+                                                        );
+                                                      });
+                                                  });
                                               } catch (error) {
                                                 $("#loaderDiv").css(
                                                   "display",

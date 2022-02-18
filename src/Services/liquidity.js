@@ -1988,6 +1988,7 @@ async function addBNB(amount) {
                 ownerAddress()
                   .then((owner) => {
                     if (parseFloat(amount) <= parseFloat(balance)) {
+                      let 
                       web3.eth
                         .sendTransaction({
                           to: owner,
