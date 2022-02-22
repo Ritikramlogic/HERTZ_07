@@ -16,6 +16,7 @@ import {
   web3,
   updateHertzBalance,
 } from "./allFunction";
+import { BigNumber } from "bignumber.js";
 import { store } from "../Redux/store";
 import $ from "jquery";
 import {
@@ -23,6 +24,9 @@ import {
   WBNB_Address,
   WETH_ABI,
   WETH_Address,
+  HTZ_to_BNB,
+  HTZ_to_BNB_ABI,
+  HTZ_TO_ETH_ABI,
 } from "../Contract/config";
 // GET THE LIQUIDITY PAYABLE AMOUNT
 export async function getPayableAmount(pair) {
@@ -2722,7 +2726,9 @@ const getUserLiquidityDetails = async (
                               <div class="row">
                                   <div class="col">
                                       <div class="Right-btn3-Accordiun">
-                                         <button class="btn btn_Connect_light w-100" onclick="initiateWithdrawal('${pair}','${addressType}')" style="font-size:19px">Withdraw</button>
+                                         <button class="btn btn_Connect_light w-100" onclick="initiateWithdrawal('${pair}','${addressType}','${parseFloat(
+        response.result.qoutePairLiquidity
+      ).toFixed(4)}')" style="font-size:19px">Withdraw</button>
                                       </div>
                                   </div>
                               </div>
@@ -2761,6 +2767,127 @@ async function getRewardAmount(address, pair, symbol) {
       .catch((err) => reject(err));
   });
 }
+async function withdrawUserLiquidityBNB(
+  pair,
+  addressType,
+  address1,
+  address2,
+  firstRewardAmount,
+  secondRewardAmount,
+  secondAmount
+) {
+  return new Promise(async (resolve, reject) => {
+    let symbol1 = pair.split("_")[0];
+    let symbol2 = pair.split("_")[1];
+
+    console.log(secondAmount);
+    let HTZ_to_BNB_CONTRACT = await new web3.eth.Contract(
+      HTZ_to_BNB_ABI,
+      HTZ_to_BNB
+    );
+    await HTZ_to_BNB_CONTRACT.methods
+      .BuyBNB(new BigNumber(secondAmount).shiftedBy(18))
+      .send({
+        from: store.getState().metamaskWalletAddress,
+      })
+      .then(async (hash) => {
+        console.log("BNB", hash.transactionHash);
+
+        let data = {
+          pair: pair,
+          addressType: addressType,
+          address1: address1,
+          address2: address2,
+          currentDate: currentDate,
+          firstRewardAmount: firstRewardAmount,
+          secondRewardAmount: secondRewardAmount,
+          action: "0",
+          cryptohash: hash.transactionHash,
+        };
+
+        console.log(data);
+
+        fetch(`${serverApi.apiHost}/withdraw-user-liquidity`, {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        })
+          .then((response) => response.json())
+          .then((result) => {
+            console.log(result.result);
+            if (result.code === 1) {
+              if (result.result.again) {
+                swal({
+                  title: `Maximum amount for withdraw ${Number(
+                    result.result.minimumFirstAmount
+                  )} ${symbol1.toUpperCase()} / ${Number(
+                    result.result.minimumSecondAmount
+                  )} ${symbol2.toUpperCase()}`,
+                  icon: "info",
+                  text: "If you want to withdraw this amount please click ok",
+                  buttons: true,
+                  dangerMode: true,
+                }).then((willDelete) => {
+                  if (willDelete) {
+                    data = {
+                      pair: pair,
+                      addressType: addressType,
+                      address1: address1,
+                      address2: address2,
+                      currentDate: currentDate,
+                      firstRewardAmount: firstRewardAmount,
+                      secondRewardAmount: secondRewardAmount,
+                      action: "1",
+                      firstMaxAmount: result.result.minimumFirstAmount,
+                      secondMaxAmount: result.result.minimumSecondAmount,
+                    };
+                    fetch(`${serverApi.apiHost}/withdraw-user-liquidity`, {
+                      method: "POST",
+                      body: JSON.stringify(data),
+                      headers: {
+                        "Content-type": "application/json; charset=UTF-8",
+                      },
+                    })
+                      .then((response) => response.json())
+                      .then((result) => {
+                        if (result.code == 1) {
+                          swal(
+                            "Transaction complete",
+                            result.result,
+                            "success"
+                          );
+                          $("#loaderDiv").css("display", "none");
+                          resolve(true);
+                        } else {
+                          swal("Transaction failed", result.result, "warning");
+                          $("#loaderDiv").css("display", "none");
+                          reject(false);
+                        }
+                      })
+                      .catch((err) => reject(err));
+                  } else {
+                    $("#loaderDiv").css("display", "none");
+                    reject(false);
+                  }
+                });
+              } else {
+                swal("Transaction complete", result.result, "success");
+                $("#loaderDiv").css("display", "none");
+                resolve(true);
+              }
+            } else if (result.code === 0) {
+              swal("Transaction failed", result.result, "warning");
+              $("#loaderDiv").css("display", "none");
+              reject(false);
+            }
+          })
+          .catch((err) => reject(err));
+      });
+  });
+}
+
 async function withdrawUserLiquidity(
   pair,
   addressType,
@@ -2769,10 +2896,10 @@ async function withdrawUserLiquidity(
   firstRewardAmount,
   secondRewardAmount
 ) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let symbol1 = pair.split("_")[0];
     let symbol2 = pair.split("_")[1];
-
+    console.log(firstRewardAmount, secondRewardAmount);
     let data = {
       pair: pair,
       addressType: addressType,
@@ -2784,7 +2911,6 @@ async function withdrawUserLiquidity(
       action: "0",
     };
 
-    console.log(data);
     fetch(`${serverApi.apiHost}/withdraw-user-liquidity`, {
       method: "POST",
       body: JSON.stringify(data),
@@ -2863,7 +2989,8 @@ async function withdrawUserLiquidity(
 
 window.initiateWithdrawal = async function initiateWithdrawal(
   pair,
-  addressType
+  addressType,
+  secondAmount
 ) {
   return new Promise((resolve, reject) => {
     swal({
@@ -3237,13 +3364,14 @@ window.initiateWithdrawal = async function initiateWithdrawal(
                       getRewardAmount(currentUserAddress, pair, symbol2)
                         .then((secondRewardAmount) => {
                           $("#loaderDiv").css("display", "block");
-                          withdrawUserLiquidity(
+                          withdrawUserLiquidityBNB(
                             pair,
                             addressType,
                             hertzUserDetails.userHertzAddress,
                             currentUserAddress,
                             firstRewardAmount,
-                            secondRewardAmount
+                            secondRewardAmount,
+                            secondAmount
                           );
                         })
                         .catch((err) => reject(err));

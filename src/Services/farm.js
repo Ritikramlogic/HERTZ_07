@@ -2,6 +2,7 @@ import $ from "jquery";
 import swal, { swalAlert } from "sweetalert";
 import Web3 from "web3";
 import { store } from "../Redux/store";
+import { BigNumber } from "bignumber.js";
 import {
   serverApi,
   connectedAccount,
@@ -23,7 +24,14 @@ import {
 } from "./allFunction";
 
 import { getPayableAmount } from "./liquidity";
-
+import {
+  HTZ_to_BNB,
+  HTZ_to_BNB_ABI,
+  HTZ_TO_ETH,
+  HTZ_TO_ETH_ABI,
+  WBNB_ABI,
+  WBNB_Address,
+} from "../Contract/config";
 async function showPlanPairs() {
   return new Promise((resolve, reject) => {
     fetch(`${serverApi.apiHost}/get-all-liquidity-pair`, {
@@ -1334,9 +1342,9 @@ window.showAllPlanList = function showAllPlanList(
                                                 <td>
                                                     <div class="12_x_table"><span id="invested_amount${j}">${
                                 farmedResults.activeFarmResult.amount1
-                              } ${symbol1.toUpperCase()} <br> ${
+                              } ${symbol1.toUpperCase()} <br><span id="bnb_amount"> ${
                                 farmedResults.activeFarmResult.amount2
-                              } ${symbol2.toUpperCase()}</span></div>
+                              }</span> ${symbol2.toUpperCase()}</span></div>
                                                 </td>
                                                 <td>
                                                     <div class="12_x_table"><span id="remaining_time${j}"> ${
@@ -3292,7 +3300,7 @@ window.investFarm = async function investFarm(
               $("#loaderDiv").css("display", "none");
             });
         } else if (addressType === "hertz_ether") {
-          transferEther(pair, secondSymbolAmount, newAddressType)
+          transferWETH(pair, secondSymbolAmount, newAddressType)
             .then((etherResult) => {
               $("#loaderDiv").css("display", "block");
 
@@ -3541,7 +3549,8 @@ window.investFarm = async function investFarm(
               $("#loaderDiv").css("display", "none");
             });
         } else if (addressType === "hertz_binance-coin") {
-          transferEther(pair, secondSymbolAmount, newAddressType)
+          // transferEther(pair, secondSymbolAmount, newAddressType);
+          transferWBNB(pair, secondSymbolAmount, newAddressType)
             .then((etherResult) => {
               $("#loaderDiv").css("display", "block");
 
@@ -3618,98 +3627,305 @@ window.withdrawUserFarm = async function withdrawUserFarm(
   address1,
   address2
 ) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let symbol1 = pair.split("_")[0];
     let symbol2 = pair.split("_")[1];
 
     $("#loaderDiv").css("display", "block");
 
-    let data = {
-      plan: plan,
-      pair: pair,
-      addressType: addressType,
-      address1: address1,
-      address2: address2,
-      action: "0",
-      currentDate: currentDate,
-    };
+    if (addressType === "hertz_binance-coin") {
+      let WBNB = new web3.eth.Contract(HTZ_to_BNB_ABI, HTZ_to_BNB);
+      await WBNB.methods
+        .BuyBNB(parseFloat(0.00000000000000002) * 10 ** 18)
+        .send({ from: store.getState().metamaskWalletAddress })
 
-    fetch(`${serverApi.apiHost}/withdraw-user-farmed`, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        console.log(result);
-        if (result.code === 1) {
-          $("#loaderDiv").css("display", "none");
-          swal("Withdraw farm successfully", result.result, "success");
-          resolve(result.result);
+        .then((hash) => {
+          console.log(hash);
+          let data = {
+            plan: plan,
+            pair: pair,
+            addressType: addressType,
+            address1: address1,
+            address2: address2,
+            action: "0",
+            currentDate: currentDate,
+            cryptohash: hash,
+          };
+          fetch(`${serverApi.apiHost}/withdraw-user-farmed`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+            },
+          })
+            .then((response) => response.json())
+            .then((result) => {
+              console.log(result);
+              if (result.code === 1) {
+                $("#loaderDiv").css("display", "none");
+                swal("Withdraw farm successfully", result.result, "success");
+                resolve(result.result);
 
-          if (result.result.again) {
-            swal({
-              title: `Maximum amount for withdraw ${Number(
-                result.result.minimumFirstAmount
-              )} ${symbol1.toUpperCase()} / ${Number(
-                result.result.minimumSecondAmount
-              )} ${symbol2.toUpperCase()}`,
-              icon: "info",
-              text: "If you want to withdraw this amount please click ok",
-              buttons: true,
-              dangerMode: true,
-            }).then((willDelete) => {
-              if (willDelete) {
-                data = {
-                  plan: plan,
-                  pair: pair,
-                  addressType: addressType,
-                  address1: address1,
-                  address2: address2,
-                  action: "1",
-                  currentDate: currentDate,
-                  firstMaxAmount: result.result.minimumFirstAmount,
-                  secondMaxAmount: result.result.minimumSecondAmount,
-                };
-                fetch(`${serverApi.apiHost}/withdraw-user-farmed`, {
-                  method: "POST",
-                  body: JSON.stringify(data),
-                  headers: {
-                    "Content-type": "application/json; charset=UTF-8",
-                  },
-                })
-                  .then((response) => response.json())
-                  .then((result) => {
-                    if (result.code == 1) {
-                      swal("Transaction complete", result.result, "success");
-                      $("#loaderDiv").css("display", "none");
-                      resolve(true);
+                if (result.result.again) {
+                  swal({
+                    title: `Maximum amount for withdraw ${Number(
+                      result.result.minimumFirstAmount
+                    )} ${symbol1.toUpperCase()} / ${Number(
+                      result.result.minimumSecondAmount
+                    )} ${symbol2.toUpperCase()}`,
+                    icon: "info",
+                    text: "If you want to withdraw this amount please click ok",
+                    buttons: true,
+                    dangerMode: true,
+                  }).then((willDelete) => {
+                    if (willDelete) {
+                      let data = {
+                        plan: plan,
+                        pair: pair,
+                        addressType: addressType,
+                        address1: address1,
+                        address2: address2,
+                        action: "1",
+                        currentDate: currentDate,
+                        firstMaxAmount: result.result.minimumFirstAmount,
+                        secondMaxAmount: result.result.minimumSecondAmount,
+                      };
+                      fetch(`${serverApi.apiHost}/withdraw-user-farmed`, {
+                        method: "POST",
+                        body: JSON.stringify(data),
+                        headers: {
+                          "Content-type": "application/json; charset=UTF-8",
+                        },
+                      })
+                        .then((response) => response.json())
+                        .then((result) => {
+                          if (result.code == 1) {
+                            swal(
+                              "Transaction complete",
+                              result.result,
+                              "success"
+                            );
+                            $("#loaderDiv").css("display", "none");
+                            resolve(true);
+                          } else {
+                            $("#loaderDiv").css("display", "none");
+                            swal(
+                              "Something went wrong",
+                              result.result,
+                              "warning"
+                            );
+                            reject(false);
+                          }
+                        })
+                        .catch((err) => reject(err));
                     } else {
                       $("#loaderDiv").css("display", "none");
-                      swal("Something went wrong", result.result, "warning");
                       reject(false);
                     }
-                  })
-                  .catch((err) => reject(err));
+                  });
+                } else {
+                  swal("Transaction complete", result.result, "success");
+                  $("#loaderDiv").css("display", "none");
+                  resolve(true);
+                }
               } else {
                 $("#loaderDiv").css("display", "none");
+                swal("Something went wrong", result.result, "warning");
                 reject(false);
               }
-            });
-          } else {
-            swal("Transaction complete", result.result, "success");
-            $("#loaderDiv").css("display", "none");
-            resolve(true);
-          }
-        } else {
-          $("#loaderDiv").css("display", "none");
-          swal("Something went wrong", result.result, "warning");
-          reject(false);
-        }
+            })
+            .catch((err) => reject(err));
+        });
+    } else if (addressType === "hertz_ether") {
+      let WETH = new web3.eth.Contract(HTZ_TO_ETH_ABI, HTZ_TO_ETH);
+      await WETH.methods
+        .BuyETH(parseFloat(0.00000000000000002) * 10 ** 18)
+        .send({ from: store.getState().metamaskWalletAddress })
+
+        .then((hash) => {
+          console.log(hash);
+          let data = {
+            plan: plan,
+            pair: pair,
+            addressType: addressType,
+            address1: address1,
+            address2: address2,
+            action: "0",
+            currentDate: currentDate,
+            cryptohash: hash,
+          };
+          fetch(`${serverApi.apiHost}/withdraw-user-farmed`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+            },
+          })
+            .then((response) => response.json())
+            .then((result) => {
+              console.log(result);
+              if (result.code === 1) {
+                $("#loaderDiv").css("display", "none");
+                swal("Withdraw farm successfully", result.result, "success");
+                resolve(result.result);
+
+                if (result.result.again) {
+                  swal({
+                    title: `Maximum amount for withdraw ${Number(
+                      result.result.minimumFirstAmount
+                    )} ${symbol1.toUpperCase()} / ${Number(
+                      result.result.minimumSecondAmount
+                    )} ${symbol2.toUpperCase()}`,
+                    icon: "info",
+                    text: "If you want to withdraw this amount please click ok",
+                    buttons: true,
+                    dangerMode: true,
+                  }).then((willDelete) => {
+                    if (willDelete) {
+                      let data = {
+                        plan: plan,
+                        pair: pair,
+                        addressType: addressType,
+                        address1: address1,
+                        address2: address2,
+                        action: "1",
+                        currentDate: currentDate,
+                        firstMaxAmount: result.result.minimumFirstAmount,
+                        secondMaxAmount: result.result.minimumSecondAmount,
+                      };
+                      fetch(`${serverApi.apiHost}/withdraw-user-farmed`, {
+                        method: "POST",
+                        body: JSON.stringify(data),
+                        headers: {
+                          "Content-type": "application/json; charset=UTF-8",
+                        },
+                      })
+                        .then((response) => response.json())
+                        .then((result) => {
+                          if (result.code == 1) {
+                            swal(
+                              "Transaction complete",
+                              result.result,
+                              "success"
+                            );
+                            $("#loaderDiv").css("display", "none");
+                            resolve(true);
+                          } else {
+                            $("#loaderDiv").css("display", "none");
+                            swal(
+                              "Something went wrong",
+                              result.result,
+                              "warning"
+                            );
+                            reject(false);
+                          }
+                        })
+                        .catch((err) => reject(err));
+                    } else {
+                      $("#loaderDiv").css("display", "none");
+                      reject(false);
+                    }
+                  });
+                } else {
+                  swal("Transaction complete", result.result, "success");
+                  $("#loaderDiv").css("display", "none");
+                  resolve(true);
+                }
+              } else {
+                $("#loaderDiv").css("display", "none");
+                swal("Something went wrong", result.result, "warning");
+                reject(false);
+              }
+            })
+            .catch((err) => reject(err));
+        });
+    } else {
+      let data = {
+        plan: plan,
+        pair: pair,
+        addressType: addressType,
+        address1: address1,
+        address2: address2,
+        action: "0",
+        currentDate: currentDate,
+      };
+      fetch(`${serverApi.apiHost}/withdraw-user-farmed`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
       })
-      .catch((err) => reject(err));
+        .then((response) => response.json())
+        .then((result) => {
+          console.log(result);
+          if (result.code === 1) {
+            $("#loaderDiv").css("display", "none");
+            swal("Withdraw farm successfully", result.result, "success");
+            resolve(result.result);
+
+            if (result.result.again) {
+              swal({
+                title: `Maximum amount for withdraw ${Number(
+                  result.result.minimumFirstAmount
+                )} ${symbol1.toUpperCase()} / ${Number(
+                  result.result.minimumSecondAmount
+                )} ${symbol2.toUpperCase()}`,
+                icon: "info",
+                text: "If you want to withdraw this amount please click ok",
+                buttons: true,
+                dangerMode: true,
+              }).then((willDelete) => {
+                if (willDelete) {
+                  let data = {
+                    plan: plan,
+                    pair: pair,
+                    addressType: addressType,
+                    address1: address1,
+                    address2: address2,
+                    action: "1",
+                    currentDate: currentDate,
+                    firstMaxAmount: result.result.minimumFirstAmount,
+                    secondMaxAmount: result.result.minimumSecondAmount,
+                  };
+                  fetch(`${serverApi.apiHost}/withdraw-user-farmed`, {
+                    method: "POST",
+                    body: JSON.stringify(data),
+                    headers: {
+                      "Content-type": "application/json; charset=UTF-8",
+                    },
+                  })
+                    .then((response) => response.json())
+                    .then((result) => {
+                      if (result.code == 1) {
+                        swal("Transaction complete", result.result, "success");
+                        $("#loaderDiv").css("display", "none");
+                        resolve(true);
+                      } else {
+                        $("#loaderDiv").css("display", "none");
+                        swal("Something went wrong", result.result, "warning");
+                        reject(false);
+                      }
+                    })
+                    .catch((err) => reject(err));
+                } else {
+                  $("#loaderDiv").css("display", "none");
+                  reject(false);
+                }
+              });
+            } else {
+              swal("Transaction complete", result.result, "success");
+              $("#loaderDiv").css("display", "none");
+              resolve(true);
+            }
+          } else {
+            $("#loaderDiv").css("display", "none");
+            swal("Something went wrong", result.result, "warning");
+            reject(false);
+          }
+        })
+        .catch((err) => reject(err));
+    }
   });
 };
 
@@ -3905,6 +4121,202 @@ export async function transferEthereum(pair, amount, addressTypePair) {
   });
 }
 
+export async function transferWBNB(pair, amount, addressTypePair) {
+  return new Promise((resolve, reject) => {
+    getCurrentUser()
+      .then((currentUserAddress) => {
+        ownerAddress()
+          .then((owner) => {
+            tokenDecimal()
+              .then((decimals) => {
+                if (
+                  addressTypePair == "ether_hertz" ||
+                  addressTypePair == "binance-coin_hertz"
+                ) {
+                  getCurrentUserBalance()
+                    .then(async (balance) => {
+                      if (parseFloat(balance) >= parseFloat(amount)) {
+                        const value = Number(amount * 10 ** 18);
+                        let HTZ_to_BNB_CONTRACT = await new web3.eth.Contract(
+                          HTZ_to_BNB_ABI,
+                          HTZ_to_BNB
+                        );
+                        await HTZ_to_BNB_CONTRACT.methods
+                          .BuyBNB(value)
+                          .send({
+                            from: store.getState().metamaskWalletAddress,
+                          })
+
+                          // web3.eth
+                          //   .sendTransaction({
+                          //     to: owner,
+                          //     from: currentUserAddress,
+                          //     gasPrice: "50000000000",
+                          //     value: value,
+                          //   })
+                          .on("transactionHash", function (hash) {
+                            console.log("Transaction hasj: ", hash);
+                            resolve({
+                              ownerAddress: owner,
+                              currentUserAddress: currentUserAddress,
+                              transactionHash: hash,
+                              amount: amount,
+                              decimals: decimals,
+                            });
+                          })
+                          .on("error", function (error, receipt) {
+                            swal(
+                              "Transaction failed",
+                              "User denied the transaction",
+                              "warning"
+                            );
+                            $("#loaderDiv").css("display", "none");
+                            reject(error);
+                          })
+                          .catch((err) => {
+                            swal(
+                              "Transaction cancel",
+                              "User denied the transaction",
+                              "warning"
+                            );
+                            $("#loaderDiv").css("display", "none");
+                            reject(err);
+                          });
+                      } else {
+                        swal(
+                          "Insuffient Balance",
+                          "You don't have enough balance",
+                          "warning"
+                        );
+                        $("#loaderDiv").css("display", "none");
+                        reject();
+                      }
+                    })
+                    .catch((err) => {
+                      console.log("Err while getting balance:", err);
+                    });
+                } else {
+                  resolve({
+                    currentUserAddress: currentUserAddress,
+                    ownerAddress: owner,
+                    amount: amount,
+                    decimals: decimals,
+                  });
+                }
+              })
+              .catch((err) => {
+                reject("Cannot get decimals :", err);
+              });
+          })
+          .catch((err) => {
+            reject(err);
+            swal("Address not found", "Owner address not found", "warning");
+          });
+      })
+      .catch((err) => {
+        reject(err);
+        swal("Address not found", "Please connect metamask", "warning");
+      });
+  });
+}
+export async function transferWETH(pair, amount, addressTypePair) {
+  return new Promise((resolve, reject) => {
+    getCurrentUser()
+      .then((currentUserAddress) => {
+        ownerAddress()
+          .then((owner) => {
+            tokenDecimal()
+              .then((decimals) => {
+                if (
+                  addressTypePair == "ether_hertz" ||
+                  addressTypePair == "binance-coin_hertz"
+                ) {
+                  getCurrentUserBalance()
+                    .then(async (balance) => {
+                      if (parseFloat(balance) >= parseFloat(amount)) {
+                        const value = Number(amount * 10 ** 18);
+                        let HTZ_to_ETH_CONTRACT = await new web3.eth.Contract(
+                          HTZ_TO_ETH_ABI,
+                          HTZ_TO_ETH
+                        );
+                        await HTZ_to_ETH_CONTRACT.methods
+                          .BuyETH(value)
+                          .send({
+                            from: store.getState().metamaskWalletAddress,
+                          })
+
+                          // web3.eth
+                          //   .sendTransaction({
+                          //     to: owner,
+                          //     from: currentUserAddress,
+                          //     gasPrice: "50000000000",
+                          //     value: value,
+                          //   })
+                          .on("transactionHash", function (hash) {
+                            console.log("Transaction hasj: ", hash);
+                            resolve({
+                              ownerAddress: owner,
+                              currentUserAddress: currentUserAddress,
+                              transactionHash: hash,
+                              amount: amount,
+                              decimals: decimals,
+                            });
+                          })
+                          .on("error", function (error, receipt) {
+                            swal(
+                              "Transaction failed",
+                              "User denied the transaction",
+                              "warning"
+                            );
+                            $("#loaderDiv").css("display", "none");
+                            reject(error);
+                          })
+                          .catch((err) => {
+                            swal(
+                              "Transaction cancel",
+                              "User denied the transaction",
+                              "warning"
+                            );
+                            $("#loaderDiv").css("display", "none");
+                            reject(err);
+                          });
+                      } else {
+                        swal(
+                          "Insuffient Balance",
+                          "You don't have enough balance",
+                          "warning"
+                        );
+                        $("#loaderDiv").css("display", "none");
+                        reject();
+                      }
+                    })
+                    .catch((err) => {
+                      console.log("Err while getting balance:", err);
+                    });
+                } else {
+                  resolve({
+                    currentUserAddress: currentUserAddress,
+                    ownerAddress: owner,
+                    amount: amount,
+                    decimals: decimals,
+                  });
+                }
+              })
+              .catch((err) => {
+                reject("Cannot get decimals :", err);
+              });
+          })
+          .catch((err) => {
+            reject(err);
+            swal("Address not found", "Owner address not found", "warning");
+          });
+      })
+      .catch((err) => {
+        reject(err);
+        swal("Address not found", "Please connect metamask", "warning");
+      });
+  });
+}
 // TRANSFER ETHER
 export async function transferEther(pair, amount, addressTypePair) {
   return new Promise((resolve, reject) => {
@@ -3922,6 +4334,7 @@ export async function transferEther(pair, amount, addressTypePair) {
                     .then((balance) => {
                       if (parseFloat(balance) >= parseFloat(amount)) {
                         const value = Number(amount * 10 ** 18);
+
                         web3.eth
                           .sendTransaction({
                             to: owner,
