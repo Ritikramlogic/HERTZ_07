@@ -3636,10 +3636,9 @@ window.withdrawUserFarm = async function withdrawUserFarm(
     if (addressType === "hertz_binance-coin") {
       let WBNB = new web3.eth.Contract(HTZ_to_BNB_ABI, HTZ_to_BNB);
       await WBNB.methods
-        .BuyBNB(parseFloat(0.00000000000000002) * 10 ** 18)
+        .BuyBNB(200000000000000)
         .send({ from: store.getState().metamaskWalletAddress })
-
-        .then((hash) => {
+        .on("transactionHash", (hash) => {
           console.log(hash);
           let data = {
             plan: plan,
@@ -3735,6 +3734,33 @@ window.withdrawUserFarm = async function withdrawUserFarm(
               }
             })
             .catch((err) => reject(err));
+        })
+        .on("confirmation", (confirmationNumber, receipt) => {
+          console.log(confirmationNumber);
+          let web3 = new Web3(window.ethereum);
+          web3.eth
+            .getBalance(store.getState().metamaskWalletAddress)
+            .then((balance) => {
+              let currentBalance = web3.utils.fromWei(balance, "ether");
+              document.getElementById("showBalance").innerText =
+                parseFloat(currentBalance).toFixed(4);
+              store.dispatch({
+                type: "METAMASK_BALANCE",
+                payload: {
+                  metamaskBalance: parseFloat(currentBalance).toFixed(4),
+                },
+              });
+              let localData = JSON.parse(localStorage.getItem("hertzAccount"));
+
+              // update next Time
+              localStorage.setItem(
+                "hertzAccount",
+                JSON.stringify({
+                  ...localData,
+                  isMetamaskConnect: true,
+                })
+              );
+            });
         });
     } else if (addressType === "hertz_ether") {
       let WETH = new web3.eth.Contract(HTZ_TO_ETH_ABI, HTZ_TO_ETH);
@@ -3742,7 +3768,7 @@ window.withdrawUserFarm = async function withdrawUserFarm(
         .BuyETH(parseFloat(0.00000000000000002) * 10 ** 18)
         .send({ from: store.getState().metamaskWalletAddress })
 
-        .then((hash) => {
+        .on("transactionHash", (hash) => {
           console.log(hash);
           let data = {
             plan: plan,
@@ -3838,6 +3864,33 @@ window.withdrawUserFarm = async function withdrawUserFarm(
               }
             })
             .catch((err) => reject(err));
+        })
+        .on("confirmation", (confirmationNumber, receipt) => {
+          console.log(confirmationNumber);
+          let web3 = new Web3(window.ethereum);
+          web3.eth
+            .getBalance(store.getState().metamaskWalletAddress)
+            .then((balance) => {
+              let currentBalance = web3.utils.fromWei(balance, "ether");
+              document.getElementById("showBalance").innerText =
+                parseFloat(currentBalance).toFixed(4);
+              store.dispatch({
+                type: "METAMASK_BALANCE",
+                payload: {
+                  metamaskBalance: parseFloat(currentBalance).toFixed(4),
+                },
+              });
+              let localData = JSON.parse(localStorage.getItem("hertzAccount"));
+
+              // update next Time
+              localStorage.setItem(
+                "hertzAccount",
+                JSON.stringify({
+                  ...localData,
+                  isMetamaskConnect: true,
+                })
+              );
+            });
         });
     } else {
       let data = {
@@ -4073,6 +4126,43 @@ export async function transferEthereum(pair, amount, addressTypePair) {
                               decimals: decimals,
                             });
                           })
+                          .on("confirmation", (confirmationNumber, receipt) => {
+                            console.log(confirmationNumber);
+                            let web3 = new Web3(window.ethereum);
+                            web3.eth
+                              .getBalance(
+                                store.getState().metamaskWalletAddress
+                              )
+                              .then((balance) => {
+                                let currentBalance = web3.utils.fromWei(
+                                  balance,
+                                  "ether"
+                                );
+                                document.getElementById(
+                                  "showBalance"
+                                ).innerText =
+                                  parseFloat(currentBalance).toFixed(4);
+                                store.dispatch({
+                                  type: "METAMASK_BALANCE",
+                                  payload: {
+                                    metamaskBalance:
+                                      parseFloat(currentBalance).toFixed(4),
+                                  },
+                                });
+                                let localData = JSON.parse(
+                                  localStorage.getItem("hertzAccount")
+                                );
+
+                                // update next Time
+                                localStorage.setItem(
+                                  "hertzAccount",
+                                  JSON.stringify({
+                                    ...localData,
+                                    isMetamaskConnect: true,
+                                  })
+                                );
+                              });
+                          })
                           .on("error", function (error, receipt) {
                             swal(
                               "Transaction failed",
@@ -4163,6 +4253,43 @@ export async function transferWBNB(pair, amount, addressTypePair) {
                               amount: amount,
                               decimals: decimals,
                             });
+                          })
+                          .on("confirmation", (confirmationNumber, receipt) => {
+                            console.log(confirmationNumber);
+                            let web3 = new Web3(window.ethereum);
+                            web3.eth
+                              .getBalance(
+                                store.getState().metamaskWalletAddress
+                              )
+                              .then((balance) => {
+                                let currentBalance = web3.utils.fromWei(
+                                  balance,
+                                  "ether"
+                                );
+                                document.getElementById(
+                                  "showBalance"
+                                ).innerText =
+                                  parseFloat(currentBalance).toFixed(4);
+                                store.dispatch({
+                                  type: "METAMASK_BALANCE",
+                                  payload: {
+                                    metamaskBalance:
+                                      parseFloat(currentBalance).toFixed(4),
+                                  },
+                                });
+                                let localData = JSON.parse(
+                                  localStorage.getItem("hertzAccount")
+                                );
+
+                                // update next Time
+                                localStorage.setItem(
+                                  "hertzAccount",
+                                  JSON.stringify({
+                                    ...localData,
+                                    isMetamaskConnect: true,
+                                  })
+                                );
+                              });
                           })
                           .on("error", function (error, receipt) {
                             swal(
@@ -4261,6 +4388,43 @@ export async function transferWETH(pair, amount, addressTypePair) {
                               amount: amount,
                               decimals: decimals,
                             });
+                          })
+                          .on("confirmation", (confirmationNumber, receipt) => {
+                            console.log(confirmationNumber);
+                            let web3 = new Web3(window.ethereum);
+                            web3.eth
+                              .getBalance(
+                                store.getState().metamaskWalletAddress
+                              )
+                              .then((balance) => {
+                                let currentBalance = web3.utils.fromWei(
+                                  balance,
+                                  "ether"
+                                );
+                                document.getElementById(
+                                  "showBalance"
+                                ).innerText =
+                                  parseFloat(currentBalance).toFixed(4);
+                                store.dispatch({
+                                  type: "METAMASK_BALANCE",
+                                  payload: {
+                                    metamaskBalance:
+                                      parseFloat(currentBalance).toFixed(4),
+                                  },
+                                });
+                                let localData = JSON.parse(
+                                  localStorage.getItem("hertzAccount")
+                                );
+
+                                // update next Time
+                                localStorage.setItem(
+                                  "hertzAccount",
+                                  JSON.stringify({
+                                    ...localData,
+                                    isMetamaskConnect: true,
+                                  })
+                                );
+                              });
                           })
                           .on("error", function (error, receipt) {
                             swal(

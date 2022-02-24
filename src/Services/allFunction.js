@@ -595,8 +595,6 @@ export const tokenDecimal = async () => {
   });
 };
 const showCurrentNetwork = async (web3) => {
-  //web3 = new window.Web3(window.ethereum);
-  // console.log(web3);
   web3.eth.net.getId().then((netId) => {
     console.log(netId);
     let network;

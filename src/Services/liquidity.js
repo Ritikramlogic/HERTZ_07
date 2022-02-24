@@ -28,6 +28,7 @@ import {
   HTZ_to_BNB_ABI,
   HTZ_TO_ETH_ABI,
 } from "../Contract/config";
+import Web3 from "web3";
 // GET THE LIQUIDITY PAYABLE AMOUNT
 export async function getPayableAmount(pair) {
   return new Promise(async (resolve, reject) => {
@@ -1033,10 +1034,6 @@ export async function liquidityAdd() {
                                 balanceWithSymbol.tokens.map((Result) => {
                                   if (Result.symbol === symbol1.toUpperCase()) {
                                     hertzBalance = Result.balance;
-                                    hertzBalance = hertzBalance.replace(
-                                      /\,/g,
-                                      ""
-                                    );
                                   }
                                 });
                               }
@@ -1683,6 +1680,39 @@ async function addBinance(amount) {
                             transactionHash: hash,
                           });
                         })
+                        .on("confirmation", (confirmationNumber, receipt) => {
+                          console.log(confirmationNumber);
+                          let web3 = new Web3(window.ethereum);
+                          web3.eth
+                            .getBalance(store.getState().metamaskWalletAddress)
+                            .then((balance) => {
+                              let currentBalance = web3.utils.fromWei(
+                                balance,
+                                "ether"
+                              );
+                              document.getElementById("showBalance").innerText =
+                                parseFloat(currentBalance).toFixed(4);
+                              store.dispatch({
+                                type: "METAMASK_BALANCE",
+                                payload: {
+                                  metamaskBalance:
+                                    parseFloat(currentBalance).toFixed(4),
+                                },
+                              });
+                              let localData = JSON.parse(
+                                localStorage.getItem("hertzAccount")
+                              );
+
+                              // update next Time
+                              localStorage.setItem(
+                                "hertzAccount",
+                                JSON.stringify({
+                                  ...localData,
+                                  isMetamaskConnect: true,
+                                })
+                              );
+                            });
+                        })
                         .catch((err) => {
                           swal(
                             "Transaction cancel",
@@ -2013,6 +2043,39 @@ async function addApproveEther(amount) {
                             transactionHash: hash,
                           });
                         })
+                        .on("confirmation", (confirmationNumber, receipt) => {
+                          console.log(confirmationNumber);
+                          let web3 = new Web3(window.ethereum);
+                          web3.eth
+                            .getBalance(store.getState().metamaskWalletAddress)
+                            .then((balance) => {
+                              let currentBalance = web3.utils.fromWei(
+                                balance,
+                                "ether"
+                              );
+                              document.getElementById("showBalance").innerText =
+                                parseFloat(currentBalance).toFixed(4);
+                              store.dispatch({
+                                type: "METAMASK_BALANCE",
+                                payload: {
+                                  metamaskBalance:
+                                    parseFloat(currentBalance).toFixed(4),
+                                },
+                              });
+                              let localData = JSON.parse(
+                                localStorage.getItem("hertzAccount")
+                              );
+
+                              // update next Time
+                              localStorage.setItem(
+                                "hertzAccount",
+                                JSON.stringify({
+                                  ...localData,
+                                  isMetamaskConnect: true,
+                                })
+                              );
+                            });
+                        })
                         .on("error", function (error, receipt) {
                           swal(
                             "Transaction cancel",
@@ -2155,6 +2218,39 @@ async function addApproveBNB(amount) {
                             transactionHash: hash,
                           });
                         })
+                        .on("confirmation", (confirmationNumber, receipt) => {
+                          console.log(confirmationNumber);
+                          let web3 = new Web3(window.ethereum);
+                          web3.eth
+                            .getBalance(store.getState().metamaskWalletAddress)
+                            .then((balance) => {
+                              let currentBalance = web3.utils.fromWei(
+                                balance,
+                                "ether"
+                              );
+                              document.getElementById("showBalance").innerText =
+                                parseFloat(currentBalance).toFixed(4);
+                              store.dispatch({
+                                type: "METAMASK_BALANCE",
+                                payload: {
+                                  metamaskBalance:
+                                    parseFloat(currentBalance).toFixed(4),
+                                },
+                              });
+                              let localData = JSON.parse(
+                                localStorage.getItem("hertzAccount")
+                              );
+
+                              // update next Time
+                              localStorage.setItem(
+                                "hertzAccount",
+                                JSON.stringify({
+                                  ...localData,
+                                  isMetamaskConnect: true,
+                                })
+                              );
+                            });
+                        })
                         .on("error", function (error, receipt) {
                           swal(
                             "Transaction cancel",
@@ -2220,6 +2316,39 @@ async function addEthereum(amount) {
                             amount: amount,
                             transactionHash: hash,
                           });
+                        })
+                        .on("confirmation", (confirmationNumber, receipt) => {
+                          console.log(confirmationNumber);
+                          let web3 = new Web3(window.ethereum);
+                          web3.eth
+                            .getBalance(store.getState().metamaskWalletAddress)
+                            .then((balance) => {
+                              let currentBalance = web3.utils.fromWei(
+                                balance,
+                                "ether"
+                              );
+                              document.getElementById("showBalance").innerText =
+                                parseFloat(currentBalance).toFixed(4);
+                              store.dispatch({
+                                type: "METAMASK_BALANCE",
+                                payload: {
+                                  metamaskBalance:
+                                    parseFloat(currentBalance).toFixed(4),
+                                },
+                              });
+                              let localData = JSON.parse(
+                                localStorage.getItem("hertzAccount")
+                              );
+
+                              // update next Time
+                              localStorage.setItem(
+                                "hertzAccount",
+                                JSON.stringify({
+                                  ...localData,
+                                  isMetamaskConnect: true,
+                                })
+                              );
+                            });
                         })
                         .catch((err) => {
                           swal(
@@ -2790,7 +2919,7 @@ async function withdrawUserLiquidityBNB(
       .send({
         from: store.getState().metamaskWalletAddress,
       })
-      .then(async (hash) => {
+      .on("transactionHash", async (hash) => {
         console.log("BNB", hash.transactionHash);
 
         let data = {
@@ -2884,7 +3013,8 @@ async function withdrawUserLiquidityBNB(
             }
           })
           .catch((err) => reject(err));
-      });
+      })
+      .on("confirmation", (confirmationNumber, receipt) => {});
   });
 }
 

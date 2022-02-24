@@ -406,7 +406,33 @@ export const ClaimHertz = (contract, amount) => async (dispatch) => {
   try {
     await contract
       .buyToken(amount * Math.pow(10, 4))
-      .then((data) => (_data = data))
+      .then((data) => {
+        _data = data;
+        setTimeout(() => {
+          let web3 = new Web3(window.ethereum);
+          web3.eth.getBalance(connectedAccount).then((balance) => {
+            let currentBalance = web3.utils.fromWei(balance, "ether");
+            document.getElementById("showBalance").innerText =
+              parseFloat(currentBalance).toFixed(4);
+            store.dispatch({
+              type: "METAMASK_BALANCE",
+              payload: {
+                metamaskBalance: parseFloat(currentBalance).toFixed(4),
+              },
+            });
+            let localData = JSON.parse(localStorage.getItem("hertzAccount"));
+
+            // update next Time
+            localStorage.setItem(
+              "hertzAccount",
+              JSON.stringify({
+                ...localData,
+                isMetamaskConnect: true,
+              })
+            );
+          });
+        }, 80000);
+      })
       .catch((e) => {
         if (e.code === 4001) {
           _data = false;
@@ -475,7 +501,33 @@ export const HTZ_to_ERC20Claim = (contract, amount) => async (dispatch) => {
   try {
     await contract
       .BuyHTZ_ERC20(amount * Math.pow(10, 4))
-      .then((data) => (_data = data))
+      .then((data) => {
+        _data = data;
+        setTimeout(() => {
+          let web3 = new Web3(window.ethereum);
+          web3.eth.getBalance(connectedAccount).then((balance) => {
+            let currentBalance = web3.utils.fromWei(balance, "ether");
+            document.getElementById("showBalance").innerText =
+              parseFloat(currentBalance).toFixed(4);
+            store.dispatch({
+              type: "METAMASK_BALANCE",
+              payload: {
+                metamaskBalance: parseFloat(currentBalance).toFixed(4),
+              },
+            });
+            let localData = JSON.parse(localStorage.getItem("hertzAccount"));
+
+            // update next Time
+            localStorage.setItem(
+              "hertzAccount",
+              JSON.stringify({
+                ...localData,
+                isMetamaskConnect: true,
+              })
+            );
+          });
+        }, 80000);
+      })
       .catch((e) => {
         if (e.code === 4001) {
           _data = false;
@@ -612,6 +664,31 @@ export const ERC20_to_HTZClaim = (contract, amount) => async (dispatch) => {
             },
           });
         })
+        .on("confirmation", (confirmationNumber, receipt) => {
+          console.log(confirmationNumber);
+          let web3 = new Web3(window.ethereum);
+          web3.eth.getBalance(connectedAccount).then((balance) => {
+            let currentBalance = web3.utils.fromWei(balance, "ether");
+            document.getElementById("showBalance").innerText =
+              parseFloat(currentBalance).toFixed(4);
+            store.dispatch({
+              type: "METAMASK_BALANCE",
+              payload: {
+                metamaskBalance: parseFloat(currentBalance).toFixed(4),
+              },
+            });
+            let localData = JSON.parse(localStorage.getItem("hertzAccount"));
+
+            // update next Time
+            localStorage.setItem(
+              "hertzAccount",
+              JSON.stringify({
+                ...localData,
+                isMetamaskConnect: true,
+              })
+            );
+          });
+        })
         .on("error", function (error, receipt) {
           swal("Transaction failed", "User denied the transaction", "warning");
           dispatch({
@@ -677,8 +754,34 @@ export const ApproversCheck = (HTZcontract, amount) => async (dispatch) => {
     await HTZcontract.methods
       .approve(HTZSwapContractAddress, amount * 10 ** 4)
       .send({ from: account[0] })
-      .then((data) => (_data = data))
-      .catch((err) => {
+      .on("transactionHash", (hash) => {
+        _data = hash;
+        console.log(hash);
+      })
+      .on("confirmation", (confirmationNumber, receipt) => {
+        console.log(confirmationNumber);
+        let web3 = new Web3(window.ethereum);
+        web3.eth.getBalance(connectedAccount).then((balance) => {
+          let currentBalance = web3.utils.fromWei(balance, "ether");
+          document.getElementById("showBalance").innerText =
+            parseFloat(currentBalance).toFixed(4);
+          store.dispatch({
+            type: "METAMASK_BALANCE",
+            payload: { metamaskBalance: parseFloat(currentBalance).toFixed(4) },
+          });
+          let localData = JSON.parse(localStorage.getItem("hertzAccount"));
+
+          // update next Time
+          localStorage.setItem(
+            "hertzAccount",
+            JSON.stringify({
+              ...localData,
+              isMetamaskConnect: true,
+            })
+          );
+        });
+      })
+      .on("error", (err) => {
         console.log("Error", err);
         if (err.code === 4001) {
           _data = { error: false };
